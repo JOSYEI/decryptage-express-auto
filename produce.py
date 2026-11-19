@@ -106,8 +106,14 @@ def voice(text, path):
         run([FFMPEG, "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", f"{secs:.2f}",
              "-c:a", "libmp3lame", path])
         return
-    run([sys.executable, "-m", "edge_tts", "--voice", VOICE, "--rate", ENV.get("RATE") or "+7%",
-         "--pitch", ENV.get("PITCH") or "+2Hz", "--text", text, "--write-media", path])
+    base = [sys.executable, "-m", "edge_tts", "--voice", VOICE, "--text", text, "--write-media", path]
+    pros = ["--rate=" + (ENV.get("RATE") or "+7%"), "--pitch=" + (ENV.get("PITCH") or "+2Hz")]
+    for extra in (pros, []):          # d'abord expressive, sinon voix normale (jamais d'échec)
+        try:
+            run(base + extra); return
+        except subprocess.CalledProcessError:
+            continue
+    sys.exit("Voix indisponible")
 
 
 def make_music(path, secs):
