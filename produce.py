@@ -24,7 +24,8 @@ def load_env():
 
 
 ENV = load_env()
-MOCK = ENV.get("MOCK") == "1"
+MOCK = ENV.get("MOCK") == "1"      # essai sans voix ni clé
+DEMO = ENV.get("DEMO") == "1"      # script d'exemple + vraie voix + musique
 VOICE = ENV.get("VOICE") or "fr-FR-RemyMultilingualNeural"
 OUT_DIR = ENV.get("OUT_DIR") or os.path.join(HERE, "out")
 FFMPEG = ENV.get("FFMPEG") or "ffmpeg"
@@ -55,6 +56,19 @@ MOCK_SCRIPT = {
          "onscreen": "Abonne-toi", "keywords": ["robot hand", "futuristic city"], "highlight": True},
     ],
 }
+
+
+def demo_script(topic):
+    t = topic["title"].split(" - ")[0]
+    srcs = ", ".join(sorted({a["source"] for a in topic["articles"]})[:3])
+    sc = lambda n, o, k, h: {"narration": n, "onscreen": o, "keywords": k, "highlight": h}
+    return {"title": "Essai : " + t[:80], "description": "Exemple de rendu : " + t, "hashtags": ["#robotshumanoides", "#ia"],
+            "scenes": [
+        sc("Attends. Regarde bien ce qui vient d'arriver dans le monde des robots humanoïdes.", "ATTENDS. REGARDE.", ["humanoid robot"], True),
+        sc(f"Voici l'information du jour : {t}.", "L'INFO DU JOUR", ["robot factory"], True),
+        sc(f"Elle est rapportée par {srcs}. Et franchement, ça change la façon de voir ces machines.", "ÇA CHANGE TOUT", ["robot technology"], False),
+        sc("Mais attention : les détails ne sont pas encore tous connus. On reste prudent, et on vous tient au courant.", "RESTONS PRUDENTS", ["futuristic lab"], False),
+        sc("Abonne-toi : une vidéo chaque jour à dix heures, pour tout comprendre sans jargon.", "ABONNE-TOI", ["robot hand"], True)]}
 
 
 def llm_script(topic):
@@ -92,7 +106,51 @@ def voice(text, path):
         run([FFMPEG, "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", f"{secs:.2f}",
              "-c:a", "libmp3lame", path])
         return
-    run([sys.executable, "-m", "edge_tts", "--voice", VOICE, "--text", text, "--write-media", path])
+    run([sys.executable, "-m", "edge_tts", "--voice", VOICE, "--rate", ENV.get("RATE") or "+7%",
+         "--pitch", ENV.get("PITCH") or "+2Hz", "--text", text, "--write-media", path])
+
+
+def make_music(path, secs):
+    """Musique originale générée par code (aucun droit d'auteur) : basse, kick, arpège, nappe. 104 BPM."""
+    import numpy as np, wave
+    sr = 44100; bpm = 104; beat = 60 / bpm
+    n = int((secs + 2) * sr); t = np.arange(n) / sr
+    out = np.zeros(n)
+    prog = [55.0, 43.65, 49.0, 36.71]            # La, Fa, Sol, Ré (basse)
+    chords = [[220, 261.6, 329.6], [174.6, 220, 261.6], [196, 246.9, 293.7], [146.8, 185, 220]]
+    bar = beat * 4
+    for i in range(int(secs / bar) + 2):
+        b0 = int(i * bar * sr); ci = i % 4
+        L = int(bar * sr); tt = np.arange(L) / sr
+        seg = np.zeros(L)
+        seg += 0.30 * np.sin(2 * np.pi * prog[ci] * tt) * (0.7 + 0.3 * np.sin(2 * np.pi * 2 * tt / bar))
+        for f in chords[ci]:
+            seg += 0.07 * np.sin(2 * np.pi * f * tt) * np.minimum(1, tt * 2) * np.minimum(1, (bar - tt) * 2)
+        for k in range(8):                                  # arpège en croches
+            f = chords[ci][k % 3] * (2 if k % 2 else 1)
+            s0 = int(k * beat / 2 * sr); l = int(beat / 2 * sr)
+            e = np.exp(-np.arange(l) / sr * 9)
+            seg[s0:s0 + l] += 0.10 * np.sin(2 * np.pi * f * np.arange(l) / sr) * e[:len(seg[s0:s0 + l])]
+        for k in range(4):                                  # kick sur chaque temps
+            s0 = int(k * beat * sr); l = int(0.18 * sr); tk = np.arange(l) / sr
+            kick = np.sin(2 * np.pi * (110 * np.exp(-tk * 22) + 45) * tk) * np.exp(-tk * 14)
+            seg[s0:s0 + l] += 0.55 * kick[:len(seg[s0:s0 + l])]
+        end = min(n, b0 + L); out[b0:end] += seg[:end - b0]
+    out *= np.minimum(1, t / 1.5) * np.minimum(1, np.maximum(0, (secs + 2 - t)) / 2)
+    out = out / max(1e-6, np.abs(out).max()) * 0.9
+    w = wave.open(path, "wb"); w.setnchannels(1); w.setsampwidth(2); w.setframerate(sr)
+    w.writeframes((out * 32767).astype(np.int16).tobytes()); w.close()
+
+
+def add_music(video, work, vol=0.13):
+    """Mixe la musique sous la voix (la musique baisse quand la voix parle)."""
+    d = duration(video); m = os.path.join(work, "music.wav"); out = video + ".m.mp4"
+    make_music(m, d)
+    run([FFMPEG, "-y", "-i", video, "-i", m, "-filter_complex",
+         f"[1:a]volume={vol}[m];[m][0:a]sidechaincompress=threshold=0.04:ratio=8:attack=20:release=400[d];"
+         f"[0:a][d]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]",
+         "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", out])
+    os.replace(out, video)
 
 
 def font(size):
@@ -127,6 +185,36 @@ def pexels(keyword, w, h, work):
         return None
 
 
+def pexels_video(keyword, w, h, work, idx):
+    """Petit clip vidéo libre (Pexels) ; None si pas de clé."""
+    key = ENV.get("PEXELS_API_KEY")
+    if not key or MOCK:
+        return None
+    path = os.path.join(work, f"pv_{re.sub(chr(92)+'W+', '_', keyword)}_{w}_{idx}.mp4")
+    if os.path.exists(path):
+        return path
+    try:
+        o = "landscape" if w > h else "portrait"
+        url = "https://api.pexels.com/videos/search?per_page=10&size=medium&orientation=" + o + "&query=" + urllib.parse.quote(keyword)
+        res = json.load(urllib.request.urlopen(urllib.request.Request(url, headers={"Authorization": key}), timeout=30))
+        v = res["videos"][idx % len(res["videos"])]
+        files = sorted([f for f in v["video_files"] if f.get("file_type") == "video/mp4" and f.get("width", 0) >= 720],
+                       key=lambda f: f["width"])
+        urllib.request.urlretrieve(files[0]["link"], path)
+        return path
+    except Exception:
+        return None
+
+
+def animated_bg(path, w, h, n, d):
+    """Fond animé généré par code (secours quand aucune vidéo libre n'est disponible)."""
+    bg, accent = PALETTES[n % len(PALETTES)]
+    hx = lambda c: "0x%02x%02x%02x" % c
+    run([FFMPEG, "-y", "-f", "lavfi", "-i",
+         f"gradients=s={w}x{h}:c0={hx(bg)}:c1={hx(accent)}:c2={hx(bg)}:x0=0:y0=0:x1={w}:y1={h}:speed=0.06:duration={d:.2f}:rate=25",
+         "-vf", "eq=brightness=-0.12:saturation=1.1,format=yuv420p", "-c:v", "libx264", "-preset", "veryfast", path])
+
+
 def wrap(px, text, f, maxw):
     lines, line = [], ""
     for wd in text.split():
@@ -139,15 +227,17 @@ def wrap(px, text, f, maxw):
     return lines
 
 
-def beat_card(path, w, h, caption, n, progress, source_line, photo=None):
+def beat_card(path, w, h, caption, n, progress, source_line, photo=None, overlay=False):
     bg, accent = PALETTES[n % len(PALETTES)]
-    if photo:
+    if overlay:
+        img = Image.new("RGBA", (w, h), (0, 0, 0, 90))
+    elif photo:
         im = Image.open(photo).convert("RGB")
         k = max(w / im.width, h / im.height)
         im = im.resize((int(im.width * k) + 1, int(im.height * k) + 1))
         l, t = (im.width - w) // 2, (im.height - h) // 2
         img = ImageEnhance.Brightness(im.crop((l, t, l + w, t + h))).enhance(0.5)
-    else:
+    if not overlay and not photo:
         img = Image.new("RGB", (w, h))
         d0 = ImageDraw.Draw(img)
         for y in range(h):
@@ -189,19 +279,36 @@ def render_scene_beats(sc, i, aud, out, w, h, work, src, prog0, prog1, counter):
     while len(chunks) < nb:
         chunks.append(sc["onscreen"])
     kws = sc.get("keywords") or []
-    lst = os.path.join(work, f"b{w}_{i}.txt")
-    lines = []
+    clips = []
     for j in range(nb):
-        photo = pexels(kws[j % len(kws)], w, h, work) if kws else None
-        p = os.path.join(work, f"b{w}_{i}_{j}.png")
-        beat_card(p, w, h, chunks[j], counter[0], prog0 + (prog1 - prog0) * (j + 1) / nb, "Sources : " + src, photo)
+        d = dur / nb; fr = max(2, int(d * 25))
+        c = os.path.join(work, f"b{w}_{i}_{j}.mp4")
+        prog = prog0 + (prog1 - prog0) * (j + 1) / nb
+        if j % 2 == 1:   # beat VIDEO : clip libre (Pexels) ou fond animé, texte par-dessus
+            p = os.path.join(work, f"o{w}_{i}_{j}.png")
+            beat_card(p, w, h, chunks[j], counter[0], prog, "Sources : " + src, overlay=True)
+            vid = pexels_video(kws[j % len(kws)], w, h, work, counter[0]) if kws else None
+            if not vid:
+                vid = os.path.join(work, f"v{w}_{i}_{j}.mp4"); animated_bg(vid, w, h, counter[0], d + 0.2)
+            run([FFMPEG, "-y", "-stream_loop", "-1", "-i", vid, "-i", p, "-filter_complex",
+                 f"[0:v]scale={w}:{h}:force_original_aspect_ratio=increase,crop={w}:{h},fps=25,eq=brightness=-0.15[b];"
+                 f"[b][1:v]overlay,fade=t=in:st=0:d=0.08,format=yuv420p", "-frames:v", str(fr), "-c:v", "libx264",
+                 "-preset", (ENV.get("PRESET") or "veryfast"), c])
+        else:            # beat IMAGE avec zoom lent
+            photo = pexels(kws[j % len(kws)], w, h, work) if kws else None
+            p = os.path.join(work, f"b{w}_{i}_{j}.png")
+            beat_card(p, w, h, chunks[j], counter[0], prog, "Sources : " + src, photo)
+            z = "1+0.0016*on" if (j // 2) % 2 == 0 else "1.12-0.0016*on"
+            run([FFMPEG, "-y", "-loop", "1", "-i", p, "-vf",
+                 f"scale={w*2}:{h*2},zoompan=z='{z}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d={fr}:s={w}x{h}:fps=25,"
+                 f"fade=t=in:st=0:d=0.08,format=yuv420p", "-frames:v", str(fr), "-c:v", "libx264",
+                 "-preset", (ENV.get("PRESET") or "veryfast"), c])
         counter[0] += 1
-        lines.append(f"file '{os.path.basename(p)}'\nduration {dur / nb:.3f}\n")
-    lines.append(f"file '{os.path.basename(p)}'\n")
-    open(lst, "w", encoding="utf-8").write("".join(lines))
-    run([FFMPEG, "-y", "-f", "concat", "-safe", "0", "-i", lst, "-i", aud, "-vf", f"fps=25,scale={w}:{h},format=yuv420p",
-         "-c:v", "libx264", "-preset", (ENV.get("PRESET") or "veryfast"), "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
-         "-shortest", out])
+        clips.append(c)
+    lst = os.path.join(work, f"b{w}_{i}.txt")
+    open(lst, "w", encoding="utf-8").write("".join(f"file '{os.path.basename(c)}'\n" for c in clips))
+    run([FFMPEG, "-y", "-f", "concat", "-safe", "0", "-i", lst, "-i", aud, "-c:v", "copy",
+         "-c:a", "aac", "-b:a", "160k", "-ar", "44100", "-shortest", out])
 
 
 def concat(parts, out, work):
@@ -215,7 +322,7 @@ def main():
     if topic_doc["status"] != "ok":
         print("Pas de vidéo aujourd'hui :", topic_doc["reason"]); return
     topic = topic_doc["topic"]
-    script = MOCK_SCRIPT if MOCK else llm_script(topic)
+    script = demo_script(topic) if DEMO else (MOCK_SCRIPT if MOCK else llm_script(topic))
     day = topic_doc["date"]
     out = os.path.join(OUT_DIR, day); work = os.path.join(out, "_tmp")
     os.makedirs(work, exist_ok=True)
@@ -239,6 +346,9 @@ def main():
     concat(clips["long"], os.path.join(out, "long.mp4"), work)
     for k, (i, p) in enumerate(list(clips["short"].items())[:3], 1):
         shutil.copy(p, os.path.join(out, f"short_{k}.mp4"))
+    if not MOCK:
+        for f in ["long.mp4"] + [f"short_{k}.mp4" for k in range(1, len(clips["short"]) + 1)][:3]:
+            add_music(os.path.join(out, f), work)
     tags = " ".join(script["hashtags"])
     desc = (script["description"] + "\n\nSources : " + ", ".join(sorted({a["source"] for a in topic["articles"]})[:6]) +
             " (articles du " + day + ")\n\nVidéo produite avec l'aide de l'IA (voix de synthèse). " + tags)
