@@ -2,7 +2,12 @@ name: Vidéo du jour
 on:
   schedule:
     - cron: "0 5 * * *"   # 6h à Paris en hiver (7h en été)
-  workflow_dispatch: {}   # bouton "Run workflow" pour tester
+  workflow_dispatch:
+    inputs:
+      essai:
+        description: "Essai sans clé ni voix réelle (true) ou production réelle (false)"
+        type: boolean
+        default: false
 permissions:
   contents: write
 jobs:
@@ -16,8 +21,14 @@ jobs:
       - run: pip install pillow edge-tts
       - name: Choix du sujet
         run: python collect.py
+      - name: Test de la voix gratuite (information)
+        continue-on-error: true
+        run: |
+          python -m edge_tts --voice fr-FR-RemyMultilingualNeural --text "Bonjour" --write-media t.mp3 \
+            && echo "VOIX_OK" || echo "VOIX_REFUSEE"
       - name: Production
         env:
+          MOCK: ${{ inputs.essai && '1' || '' }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
           LLM_MODEL: ${{ vars.LLM_MODEL }}
@@ -29,7 +40,8 @@ jobs:
           D=$(python -c "import json;print(json.load(open('topic.json'))['date'])")
           if [ -d "out/$D" ]; then
             cp modele_publication.json "out/$D/"
-            gh release create "video-$D" out/$D/* --title "Vidéo du $D" --notes "Fichiers du jour pour la publication."
+            TAG="video-$D"; [ "${{ inputs.essai }}" = "true" ] && TAG="essai-$D-${{ github.run_number }}"
+            gh release create "$TAG" out/$D/* --title "$TAG" --notes "Fichiers du jour pour la publication."
           fi
         env: { GH_TOKEN: "${{ github.token }}" }
       - name: Mémoriser l'historique et le journal

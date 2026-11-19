@@ -25,9 +25,9 @@ def load_env():
 
 ENV = load_env()
 MOCK = ENV.get("MOCK") == "1"
-VOICE = ENV.get("VOICE", "fr-FR-RemyMultilingualNeural")
-OUT_DIR = ENV.get("OUT_DIR", os.path.join(HERE, "out"))
-FFMPEG = ENV.get("FFMPEG", "ffmpeg")
+VOICE = ENV.get("VOICE") or "fr-FR-RemyMultilingualNeural"
+OUT_DIR = ENV.get("OUT_DIR") or os.path.join(HERE, "out")
+FFMPEG = ENV.get("FFMPEG") or "ffmpeg"
 BRAND = "decryptageexpress.com"
 
 PROMPT = """Tu écris pour « Décryptage Express », média français sur les robots humanoïdes et l'IA.
@@ -61,8 +61,8 @@ def llm_script(topic):
     key = ENV.get("LLM_API_KEY")
     if not key:
         sys.exit("LLM_API_KEY manquante dans config.env")
-    base = ENV.get("LLM_BASE_URL", "https://api.deepseek.com").rstrip("/")
-    model = ENV.get("LLM_MODEL", "deepseek-chat")
+    base = (ENV.get("LLM_BASE_URL") or "https://api.deepseek.com").rstrip("/")
+    model = ENV.get("LLM_MODEL") or "deepseek-chat"
     facts = "\n".join(f"- {a['title']} (source : {a['source']}, {a['published'][:10]})"
                       for a in topic["articles"])
     body = json.dumps({"model": model, "temperature": 0.4,
@@ -200,7 +200,7 @@ def render_scene_beats(sc, i, aud, out, w, h, work, src, prog0, prog1, counter):
     lines.append(f"file '{os.path.basename(p)}'\n")
     open(lst, "w", encoding="utf-8").write("".join(lines))
     run([FFMPEG, "-y", "-f", "concat", "-safe", "0", "-i", lst, "-i", aud, "-vf", f"fps=25,scale={w}:{h},format=yuv420p",
-         "-c:v", "libx264", "-preset", ENV.get("PRESET", "veryfast"), "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
+         "-c:v", "libx264", "-preset", (ENV.get("PRESET") or "veryfast"), "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
          "-shortest", out])
 
 
