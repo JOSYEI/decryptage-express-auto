@@ -127,6 +127,8 @@ def make_music(path, secs):
     bar = beat * 4
     for i in range(int(secs / bar) + 2):
         b0 = int(i * bar * sr); ci = i % 4
+        if b0 >= n:
+            break
         L = int(bar * sr); tt = np.arange(L) / sr
         seg = np.zeros(L)
         seg += 0.30 * np.sin(2 * np.pi * prog[ci] * tt) * (0.7 + 0.3 * np.sin(2 * np.pi * 2 * tt / bar))
@@ -354,7 +356,10 @@ def main():
         shutil.copy(p, os.path.join(out, f"short_{k}.mp4"))
     if not MOCK:
         for f in ["long.mp4"] + [f"short_{k}.mp4" for k in range(1, len(clips["short"]) + 1)][:3]:
-            add_music(os.path.join(out, f), work)
+            try:
+                add_music(os.path.join(out, f), work)
+            except Exception as e:
+                print('Musique ignorée :', e)
     tags = " ".join(script["hashtags"])
     desc = (script["description"] + "\n\nSources : " + ", ".join(sorted({a["source"] for a in topic["articles"]})[:6]) +
             " (articles du " + day + ")\n\nVidéo produite avec l'aide de l'IA (voix de synthèse). " + tags)
