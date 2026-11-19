@@ -1,0 +1,19 @@
+{
+  "_aide": "Modèle de publication dupliqué chaque jour par l'automatisation. Les {champs} sont remplis depuis meta.json. Modifie seulement les heures et les réseaux.",
+  "dossier_du_jour": "a_publier/{date}/",
+  "publications": [
+    {"fichier": "long.mp4",    "reseau": "youtube",   "type": "video_longue", "heure": "10:00", "titre": "{title}", "texte": "{description}"},
+    {"fichier": "long.mp4",    "reseau": "facebook",  "type": "video_longue", "heure": "10:00", "titre": "{title}", "texte": "{description}"},
+    {"fichier": "short_1.mp4", "reseau": "tiktok",    "type": "extrait",      "heure": "12:00", "texte": "{title} {hashtags}"},
+    {"fichier": "short_1.mp4", "reseau": "facebook_reels", "type": "extrait", "heure": "12:30", "texte": "{title} {hashtags}"},
+    {"fichier": "short_2.mp4", "reseau": "youtube_shorts", "type": "extrait", "heure": "16:00", "titre": "{title}", "texte": "{hashtags}"},
+    {"fichier": "short_2.mp4", "reseau": "instagram_reels", "type": "extrait", "heure": "17:30", "texte": "{title} {hashtags}"},
+    {"fichier": "short_3.mp4", "reseau": "tiktok",    "type": "extrait",      "heure": "18:00", "texte": "{title} {hashtags}"}
+  ],
+  "regles": {
+    "videos_longues_uniquement_sur": ["youtube", "facebook"],
+    "extraits_sur": ["tiktok", "instagram_reels", "facebook_reels", "youtube_shorts"],
+    "mention_ia": true,
+    "si_pas_de_video_ce_jour": "ne rien publier"
+  }
+}

@@ -1,0 +1,40 @@
+name: Vidéo du jour
+on:
+  schedule:
+    - cron: "0 5 * * *"   # 6h à Paris en hiver (7h en été)
+  workflow_dispatch: {}   # bouton "Run workflow" pour tester
+permissions:
+  contents: write
+jobs:
+  video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install pillow edge-tts
+      - name: Choix du sujet
+        run: python collect.py
+      - name: Production
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          OUT_DIR: out
+        run: python produce.py
+      - name: Publier les fichiers du jour (Release)
+        run: |
+          D=$(python -c "import json;print(json.load(open('topic.json'))['date'])")
+          if [ -d "out/$D" ]; then
+            cp modele_publication.json "out/$D/"
+            gh release create "video-$D" out/$D/* --title "Vidéo du $D" --notes "Fichiers du jour pour la publication."
+          fi
+        env: { GH_TOKEN: "${{ github.token }}" }
+      - name: Mémoriser l'historique et le journal
+        run: |
+          git config user.name "de-auto"; git config user.email "de-auto@users.noreply.github.com"
+          git add history.json log.csv topic.json 2>/dev/null || true
+          git commit -m "Journal du jour" || true
+          git push || true
