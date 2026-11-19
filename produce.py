@@ -32,12 +32,19 @@ FFMPEG = ENV.get("FFMPEG") or "ffmpeg"
 BRAND = "decryptageexpress.com"
 
 PROMPT = """Tu écris pour « Décryptage Express », média français sur les robots humanoïdes et l'IA.
-Écris le script d'une vidéo de 4 à 5 minutes (environ 600 à 750 mots), ton clair, simple, factuel,
-voix off sans visage. RÈGLES STRICTES : utilise UNIQUEMENT les faits présents dans les titres et
-sources fournis ci-dessous ; n'invente aucun chiffre, citation, date ni nom ; si une information
-manque, dis-le franchement (« les détails ne sont pas encore connus ») ; cite les sources à voix
-haute (« selon L'Usine Digitale »). Structure : accroche forte, contexte, ce qui change, limites et
-questions ouvertes, conclusion + invitation à s'abonner.
+Écris le script d'une vidéo de 4 à 5 minutes (environ 600 à 750 mots), voix off sans visage.
+STYLE (très important) : parle comme à un ami, phrases courtes, rythmées, une idée par phrase,
+tutoiement. Commence DIRECTEMENT par l'accroche la plus forte du sujet, dès le premier mot : aucun
+« bonjour », aucun « dans cette vidéo », aucun « voici ». Pas de présentation, pas de plan annoncé.
+Les scènes s'ENCHAÎNENT comme un seul récit continu : chaque scène reprend le fil de la précédente
+avec une transition naturelle (« Et ce n'est pas tout. », « Le problème ? », « Alors pourquoi
+maintenant ? ») et se termine en donnant envie d'entendre la suite. Varie l'émotion : surprise,
+curiosité, doute, enthousiasme mesuré. Pas de jargon, pas de remplissage, pas de répétitions.
+RÈGLES STRICTES : utilise UNIQUEMENT les faits présents dans les titres et sources fournis ;
+n'invente aucun chiffre, citation, date ni nom ; si une information manque, dis-le franchement
+(« les détails ne sont pas encore connus ») ; cite les sources à voix haute (« selon L'Usine Digitale »).
+Structure : accroche choc, contexte en 2 phrases, ce qui change, limites et questions ouvertes,
+conclusion courte + invitation à s'abonner (« Abonne-toi, une vidéo chaque jour à 10h »).
 Réponds UNIQUEMENT en JSON : {"title": "...(max 90 car., mots-clés robots humanoïdes)",
 "description": "2-3 phrases", "hashtags": ["#..."] (8 à 12, bien nichés),
 "scenes": [{"narration": "40 à 70 mots", "onscreen": "6 mots max", "keywords": ["3 termes de recherche EN ANGLAIS pour des photos libres, ex: humanoid robot factory"], "highlight": true|false}]}
@@ -64,11 +71,11 @@ def demo_script(topic):
     sc = lambda n, o, k, h: {"narration": n, "onscreen": o, "keywords": k, "highlight": h}
     return {"title": "Essai : " + t[:80], "description": "Exemple de rendu : " + t, "hashtags": ["#robotshumanoides", "#ia"],
             "scenes": [
-        sc("Attends. Regarde bien ce qui vient d'arriver dans le monde des robots humanoïdes.", "ATTENDS. REGARDE.", ["humanoid robot"], True),
-        sc(f"Voici l'information du jour : {t}.", "L'INFO DU JOUR", ["robot factory"], True),
-        sc(f"Elle est rapportée par {srcs}. Et franchement, ça change la façon de voir ces machines.", "ÇA CHANGE TOUT", ["robot technology"], False),
-        sc("Mais attention : les détails ne sont pas encore tous connus. On reste prudent, et on vous tient au courant.", "RESTONS PRUDENTS", ["futuristic lab"], False),
-        sc("Abonne-toi : une vidéo chaque jour à dix heures, pour tout comprendre sans jargon.", "ABONNE-TOI", ["robot hand"], True)]}
+        sc(f"Un robot humanoïde vient d'entrer dans une usine. Pour de vrai. {t}.", "UN ROBOT ENTRE À L'USINE", ["humanoid robot"], True),
+        sc(f"Et l'info ne sort pas de nulle part : elle est rapportée par {srcs}. Alors, qu'est-ce que ça change ?", "ALORS, ÇA CHANGE QUOI ?", ["robot factory"], True),
+        sc("Pour la première fois, ces machines quittent les vidéos de démonstration. Elles vont travailler au milieu de vrais humains.", "FINI LES DÉMOS", ["robot technology"], False),
+        sc("Mais attention, le plus important : les détails ne sont pas encore connus. On avance prudemment, sans rien inventer.", "ON RESTE PRUDENT", ["futuristic lab"], False),
+        sc("Tu veux la suite, dès qu'elle tombe ? Abonne-toi. Une vidéo chaque jour, à dix heures.", "ABONNE-TOI", ["robot hand"], True)]}
 
 
 def llm_script(topic):
