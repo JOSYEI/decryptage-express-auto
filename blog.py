@@ -80,7 +80,7 @@ def rebuild():
     idx = yt_index(); items = []; print("flux YouTube :", len(idx), "vidéos")
     for f in glob.glob("docs/data/*.json"):
         a = json.load(open(f, encoding="utf-8"))
-        if not a.get("yt"):
+        if not a.get("yt") and not a.get("tt"):
             k = norm(a["full_title"])
             kw = set(k.split()); best = (0, None)
             for t, v in idx:
@@ -95,7 +95,8 @@ def rebuild():
     for a in items:
         sec = sections(a["desc"]); summ = (sec[0][1][0] if sec and sec[0][1] else a["title"])
         a["summary"] = summ
-        vid = (f'<div class="video reveal"><iframe src="https://www.youtube.com/embed/{a["yt"]}" title="{esc(a["title"])}" allowfullscreen loading="lazy"></iframe></div>' if a.get("yt")
+        vid = (f'<div class="reveal" style="display:flex;justify-content:center;margin:26px 0"><blockquote class="tiktok-embed" cite="https://www.tiktok.com/@decryptageexpress.com/video/{a["tt"]}" data-video-id="{a["tt"]}" style="max-width:605px;min-width:325px"><section></section></blockquote><script async src="https://www.tiktok.com/embed.js"></script></div>' if a.get("tt") else
+               f'<div class="video reveal"><iframe src="https://www.youtube.com/embed/{a["yt"]}" title="{esc(a["title"])}" allowfullscreen loading="lazy"></iframe></div>' if a.get("yt")
                else f'<div class="video reveal"><iframe src="https://www.youtube.com/embed/videoseries?list=UU{CH[2:]}" title="Dernières vidéos" allowfullscreen loading="lazy"></iframe></div>')
         body = (f'<div class="hero"><span class="pill">VIDÉO DU {a["date"][8:]}/{a["date"][5:7]}/{a["date"][:4]}</span><h1>{esc(a["title"])}</h1></div>{vid}{render_body(sec)}'
                 f'<div class="cta reveal card"><h2>Ne rate aucun décryptage</h2><p>Abonne-toi sur tous nos réseaux : 6 Shorts par jour et une vidéo longue à 11h.</p><div class="nets" style="justify-content:center">{netlinks()}</div></div>')
