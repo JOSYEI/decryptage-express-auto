@@ -245,7 +245,7 @@ def main():
         if len(picks) == 6: break
     picks.sort(); kinds = ["switch"] * 3 + ["whoosh"] * 3; random.shuffle(kinds)
     sfx.build(os.path.join(WORK, "sfx.wav"), total, list(zip(picks, kinds)), ctat, clk, random.randrange(10**6))
-    sh(f"""ffmpeg -y -i '{WORK}/voice.wav' -i '{WORK}/sfx.wav' -stream_loop -1 -i '{mus}' -filter_complex "[0:a]asplit=2[k][v1];[2:a]atrim=0:{total:.2f},volume=0.22,afade=t=in:d=1,afade=t=out:st={total-3:.2f}:d=3[m];[m][k]sidechaincompress=threshold=0.02:ratio=10:attack=15:release=350[md];[md][v1][1:a]amix=inputs=3:normalize=0:duration=longest[mx];[mx]loudnorm=I=-14:TP=-0.8:LRA=11[o]" -map "[o]" -t {total:.2f} -ar 44100 '{WORK}/audio.wav'""")
+    sh(f"""ffmpeg -y -i '{WORK}/voice.wav' -i '{WORK}/sfx.wav' -stream_loop -1 -i '{mus}' -filter_complex "[0:a]asplit=2[k][v1];[2:a]atrim=0:{total:.2f},volume=0.147,afade=t=in:d=1,afade=t=out:st={total-3:.2f}:d=3[m];[m][k]sidechaincompress=threshold=0.02:ratio=10:attack=15:release=350[md];[md][v1][1:a]amix=inputs=3:normalize=0:duration=longest[mx];[mx]loudnorm=I=-14:TP=-0.8:LRA=11[o]" -map "[o]" -t {total:.2f} -ar 44100 '{WORK}/audio.wav'""")
     sys.path.insert(0, os.path.join(HERE, "assets")); import overlays
     ov = os.path.join(WORK, "ov"); overlays.build(ov, SHORT)
     cx, cy = ((W - 820) // 2, int(H * 0.10)) if SHORT else (W - 660, 60)

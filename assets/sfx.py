@@ -31,7 +31,7 @@ def bell(dur=1.4, f=1760):  # « cling » doux, partiels inharmoniques
     y *= np.minimum(t / .003, 1); return _norm(y)
 
 def build(path, total, trans, ctat, clk, seed=0):
-    K = .4  # niveau global : à peine perceptible
+    K = .267  # (-3,5 dB de plus) niveau global : à peine perceptible
     """trans : [(temps, 'switch'|'whoosh')]. Niveaux volontairement très bas : on doit tendre l'oreille pour les entendre."""
     rnd = random.Random(seed); out = np.zeros(int((total + 2) * SR))
     def add(sig, t0, g):
