@@ -1,6 +1,6 @@
 name: Short (collecte 1 h avant publication)
-# Heures de Paris en hiver (UTC+1). Collecte : 07h 11h 15h 19h -> publication 08h 12h 16h 20h (plus de Short à 00h ni 04h).
-# 4 Shorts par jour (le cloud n'utilise pas le quota de Claude).
+# Heures de Paris en hiver (UTC+1). Collecte : 23h 03h 07h 11h 15h 19h -> publication 00h 04h 08h 12h 16h 20h.
+# 6 Shorts par jour, toutes les 4 heures (le cloud n'utilise pas le quota de Claude).
 on:
   schedule:
     - cron: "0 6 * * *"    # collecte 07h -> Short 08h
