@@ -7,7 +7,7 @@ BANK = ("intelligence artificielle,actualité IA,actu IA,IA générative,agents 
 ST = set("le la les un une des de du et en au aux à a ce ces sur pour par avec dans qui que est sont il elle the of to in vs ou où se sa son ses plus très pas ne".split())
 def words(s): return [w for w in re.findall(r"[\wÀ-ÿ'’-]+", s)]
 def est_tags(L): return sum(len(x) + (2 if " " in x else 0) for x in L) + len(L) - 1
-def build(script, topics, mode, blocks_text, hours="00h00, 04h00, 08h00, 12h00, 16h00 et 20h00"):
+def build(script, topics, mode, blocks_text, hours="08h00, 12h00, 16h00 et 20h00"):
     short = mode == "short"
     kws = []
     for t in topics:
