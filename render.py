@@ -25,8 +25,9 @@ STRUCTURE OBLIGATOIRE : le champ « intro » est une vraie présentation : elle 
 avec l'information brute : le fait, le chiffre clé s'il existe, et en une demi-phrase pourquoi on en parle. Sans « bonjour », sans « et si ».
 Chaque bloc doit être riche en information : 1) le fait précis avec tous les chiffres, noms, montants des titres ; 2) la raison, pourquoi cela arrive ; 3) ce que cela change concrètement pour le spectateur. Pas de phrases vagues ni de remplissage.
 STYLE CAPTIVANT ET PUISSANT : ouverture choc, phrases percutantes qui alternent courtes et longues, tension et enjeu (ce qu'on gagne, ce qu'on risque), chiffres mis en valeur, comparaisons concrètes qui parlent,
-une chute marquante à la fin de chaque bloc, ton de journaliste passionné qui décrypte les coulisses, jamais de ton neutre ni scolaire. Ensuite « blocks » : UN bloc par sujet : chaque bloc commence par une phrase de transition naturelle
-(« On commence par… », « Dans la foulée… », « Autre dossier chaud… », « Et pendant ce temps… », variées, jamais deux fois la même) puis développe. Dernier bloc : conclusion + abonnement.
+une chute marquante à la fin de chaque bloc, ton de journaliste passionné qui décrypte les coulisses, jamais de ton neutre ni scolaire. Ensuite « blocks » : UN bloc par sujet : chaque bloc entre DIRECTEMENT dans son sujet, SANS phrase de transition (elles sont ajoutées automatiquement), puis développe. Dernier bloc : conclusion + abonnement, sans transition non plus.
+Si plusieurs sujets racontent la même affaire, fusionne-les en un seul bloc. Vocabulaire français riche et précis (synonymes, tournures variées, jargon du secteur expliqué simplement) :
+ne répète jamais un même mot marquant, une même tournure ni une même formule d'un bloc à l'autre ; désigne les personnes et entreprises de façons différentes (nom, fonction, pronom).
 N'utilise QUE les faits écrits dans les titres fournis : reformule-les, n'ajoute AUCUN chiffre, pourcentage ni date qui ne soit pas écrit dans les titres fournis (un chiffre inventé est une faute grave). Ne cite JAMAIS les sources ni les médias (pas de « selon », pas de nom de site) : à la place, explique le pourquoi, la raison de chaque fait, en t'appuyant uniquement sur ce que disent les titres (si la raison n'y est pas, explique l'enjeu pour le spectateur sans inventer de fait). Les sujets s'enchaînent comme un seul récit, sans « affaire à suivre ».
 Les mots-clés vidéo de chaque bloc doivent représenter LITTÉRALEMENT son sujet (objet ou lieu concret : robot, microchip, laptop code, data center, smartphone, stock market screen),
 jamais d'abstraction. Choisis-les UNIQUEMENT parmi cette liste : robot, laptop, server, code, stock-market, finance, business, data, smartphone, hacker, factory, satellite, laboratory, microscope, network, screen, keyboard, programming, drone, electronics, circuit-board, hologram, digital, technology. %s
@@ -36,7 +37,20 @@ FORMAT = ("FORMAT SHORT : intro de 40 à 55 mots, puis 4 à 6 blocs, 9 à 12 sec
           if SHORT else "FORMAT LONG : intro de 70 à 100 mots, puis 9 à 12 blocs de 45 à 70 mots, un changement de sujet toutes les 1 à 2 minutes, dernier bloc : « Abonne-toi pour la prochaine vidéo, à bientôt »."
 )
 
+def merge_same(topics):
+    """Fusionne les sujets qui parlent de la même affaire (mêmes noms propres) : aucune répétition d'un bloc à l'autre."""
+    key = lambda t: set(re.findall(r"[A-ZÉ][\wéèï]+ [A-ZÉ][\wéèï]+", t["title"]))
+    out = []
+    for t in topics:
+        k = key(t)
+        for o in out:
+            if k & key(o):
+                o["articles"] = o["articles"] + [{"title": t["title"], "source": ""}] + t["articles"]; break
+        else: out.append(dict(t, articles=list(t["articles"])))
+    return out
+
 def llm_script(topics):
+    topics = merge_same(topics)
     facts = "\n".join(f"SUJET {i+1} : {t['title']}\n" + "\n".join(f"- {a['title']}" for a in t['articles'][:4]) for i, t in enumerate(topics))
     J = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]; M = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
     n = dt.datetime.now(); facts = f"DATE DU JOUR : {J[n.weekday()]} {n.day}{'er' if n.day == 1 else ''} {M[n.month]} {n.year}\n\n" + facts
@@ -56,6 +70,9 @@ def llm_script(topics):
             d = json.loads(re.search(r"\{.*\}", txt, re.S).group(0))
             assert d["blocks"] and all(b["text"] for b in d["blocks"]) and len(d.get("intro", "")) > 40
             nw = len(d["intro"].split()) + sum(len(b["text"].split()) for b in d["blocks"])
+            TR = ["Premier dossier :", "Ensuite :", "Autre dossier chaud :", "Pendant ce temps :", "Plus loin :", "Autre info clé :", "Aussi :", "Dans un autre registre :", "Et ce n'est pas tout :", "À noter aussi :"]
+            for k, bk in enumerate(d["blocks"][:-1]): bk["text"] = (TR[k] if k < len(TR) else "Aussi :") + " " + bk["text"]
+            if len(d["blocks"]) > 2: d["blocks"][-2]["text"] = re.sub(r"^[^:]+:", "Dernier dossier :", d["blocks"][-2]["text"])
             d["blocks"] = [{"text": d["intro"], "keywords": d.get("intro_keywords") or d["blocks"][0].get("keywords", [])}] + d["blocks"]
             tgt = 190 if SHORT else 700
             if best is None or abs(nw - tgt) < best[0]: best = (abs(nw - tgt), d)
@@ -90,24 +107,36 @@ BAN = ("santa", "christmas", "xmas", "gift", "holiday", "snow", "winter", "party
 TECH = ["technology", "laptop", "server", "robot", "code", "stock-market", "business", "finance", "data", "smartphone", "hacker", "factory", "satellite",
         "laboratory", "microscope", "network", "screen", "keyboard", "programming", "drone", "electronics", "circuit-board", "hologram", "digital"]
 _page = {}
-def page_ids(slug):
-    if slug in _page: return _page[slug]
+def page_ids(slug, pg=1):
+    if (slug, pg) in _page: return _page[(slug, pg)]
     ids = []
     for att in range(3):
-        try: html = get(f"https://mixkit.co/free-stock-video/{slug}/").decode("utf8", "ignore"); ids = list(dict.fromkeys(re.findall(r"assets\.mixkit\.co/videos/(\d+)/", html))); break
+        try:
+            u = f"https://mixkit.co/free-stock-video/{slug}/" + (f"?page={pg}" if pg > 1 else "")
+            html = get(u).decode("utf8", "ignore"); ids = list(dict.fromkeys(re.findall(r"assets\.mixkit\.co/videos/(\d+)/", html))); break
         except Exception as e:
             if "429" in str(e): time.sleep(20 * (att + 1))
             else: break
-    time.sleep(1.2); _page[slug] = ids; return ids
+    time.sleep(1.0); _page[(slug, pg)] = ids; return ids
 def block_clips(kws, need, off=0):
     cands = []
+    def add(sg, pgs=6):
+        for pg in range(1, pgs + 1):
+            if len(cands) >= need: return
+            ids = page_ids(sg, pg)
+            if not ids: return
+            cands.extend(i for i in ids if i not in used and i not in cands)
     for kw in kws:
         for sg in re.sub(r"[^a-z0-9]+", "-", kw.lower()).strip("-").split("-"):
-            if sg in TECH: cands += [i for i in page_ids(sg) if i not in used and i not in cands]
+            if sg in TECH: add(sg, 3)
         if len(cands) >= need: break
     for k in range(len(TECH)):
         if len(cands) >= need: break
-        cands += [i for i in page_ids(TECH[(off + k) % len(TECH)]) if i not in used and i not in cands]
+        add(TECH[(off + k) % len(TECH)])
+    if not cands:  # réserve épuisée : on reprend les plus anciens plutôt que d'échouer
+        for k in range(len(TECH)):
+            cands += [i for i in page_ids(TECH[(off + k) % len(TECH)]) if i not in cands]
+            if len(cands) >= need: break
     got = []
     for i in cands:
         f = os.path.join(WORK, f"c{i}.mp4")
