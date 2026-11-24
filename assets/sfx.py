@@ -31,12 +31,13 @@ def bell(dur=1.4, f=1760):  # « cling » doux, partiels inharmoniques
     y *= np.minimum(t / .003, 1); return _norm(y)
 
 def build(path, total, trans, ctat, clk, seed=0):
+    K = .4  # niveau global : à peine perceptible
     """trans : [(temps, 'switch'|'whoosh')]. Niveaux volontairement très bas : on doit tendre l'oreille pour les entendre."""
     rnd = random.Random(seed); out = np.zeros(int((total + 2) * SR))
     def add(sig, t0, g):
         i = int(max(t0, 0) * SR)
         if i >= len(out): return
-        j = min(len(out), i + len(sig)); out[i:j] += sig[:j - i] * g
+        j = min(len(out), i + len(sig)); out[i:j] += sig[:j - i] * g * K
     sw = [(2400, 1600, .06), (3000, 2000, .05), (1900, 1250, .07), (3400, 2300, .045), (2700, 1800, .055)]; rnd.shuffle(sw)
     gl = [(260, 820, .6), (900, 280, .7), (180, 640, .5), (1100, 380, .8), (340, 1000, .55)]; rnd.shuffle(gl)
     roots = [98, 110, 123.5, 87.3]; rnd.shuffle(roots)
