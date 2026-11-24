@@ -24,7 +24,7 @@ phrases longues et liées, connecteurs, aucun mot-étiquette (« verdict », « 
 STRUCTURE OBLIGATOIRE : le champ « intro » est une intro de 2 phrases qui annonce tout de suite de quoi parle la vidéo (le thème de chaque sujet, en quelques mots, dans l'ordre),
 avec l'accroche la plus forte en ouverture, sans « bonjour », sans « et si ». Ensuite « blocks » : UN bloc par sujet : chaque bloc commence par une phrase de transition naturelle
 (« On commence par… », « Dans la foulée… », « Autre dossier chaud… », « Et pendant ce temps… », variées, jamais deux fois la même) puis développe. Dernier bloc : conclusion + abonnement.
-N'utilise QUE les faits écrits dans les titres fournis : reformule-les, n'ajoute ni chiffre, ni cause, ni conséquence, ni interprétation. Cite la source à voix haute. Les sujets s'enchaînent comme un seul récit, sans « affaire à suivre ».
+N'utilise QUE les faits écrits dans les titres fournis : reformule-les, n'ajoute aucun chiffre inventé. Ne cite JAMAIS les sources ni les médias (pas de « selon », pas de nom de site) : à la place, explique le pourquoi, la raison de chaque fait, en t'appuyant uniquement sur ce que disent les titres (si la raison n'y est pas, explique l'enjeu pour le spectateur sans inventer de fait). Les sujets s'enchaînent comme un seul récit, sans « affaire à suivre ».
 Les mots-clés vidéo de chaque bloc doivent représenter LITTÉRALEMENT son sujet (objet ou lieu concret : robot, microchip, laptop code, data center, smartphone, stock market screen),
 jamais d'abstraction. Choisis-les UNIQUEMENT parmi cette liste : robot, laptop, server, code, stock-market, finance, business, data, smartphone, hacker, factory, satellite, laboratory, microscope, network, screen, keyboard, programming, drone, electronics, circuit-board, hologram, digital, technology. %s
 Réponds UNIQUEMENT en JSON : {"intro":"texte de l'intro","intro_keywords":["3 mots-clés vidéo EN ANGLAIS"],"title":"titre viral à mots-clés, max 95 caractères","description":"2 phrases","hashtags":["#..."],
@@ -34,7 +34,7 @@ FORMAT = ("FORMAT SHORT : intro de 20 à 28 mots, puis 4 à 6 blocs, 12 à 17 se
 )
 
 def llm_script(topics):
-    facts = "\n".join(f"SUJET {i+1} : {t['title']}\n" + "\n".join(f"- {a['title']} ({a['source']})" for a in t['articles'][:4]) for i, t in enumerate(topics))
+    facts = "\n".join(f"SUJET {i+1} : {t['title']}\n" + "\n".join(f"- {a['title']}" for a in t['articles'][:4]) for i, t in enumerate(topics))
     msgs = [{"role": "system", "content": PROMPT % FORMAT}, {"role": "user", "content": facts}]
     key = os.environ.get("LLM_API_KEY")
     for attempt in range(4):
@@ -163,8 +163,6 @@ def main():
             txt = " ".join(("{\\c&H00D7FF&}" + w[0].upper() + "{\\c&HFFFFFF&}") if (len(w[0]) > 6 and w[0].lower().strip(",.;:!?") not in stop and (gi * n + g.index(w)) % 3 == 0) else w[0].upper() for w in g)
             yb = int(H * 0.62) if SHORT else H - 120
             ev.append(f"Dialogue: 0,{ts(s0)},{ts(e0)},D,{{\\an2\\pos({W//2},{yb})\\fscx85\\fscy85\\t(0,110,\\fscx105\\fscy105)\\t(110,190,\\fscx100\\fscy100)}}{txt}")
-            if prev:  # ancienne ligne au-dessus, fondu léger, jamais superposée
-                ev.append(f"Dialogue: 1,{ts(s0)},{ts(min(e0, s0 + .9))},D,{{\\an2\\pos({W//2},{yb - int(fs * 1.55)})\\alpha&H70&\\fad(0,250)}}{prev}")
             prev = " ".join(w[0].upper() for w in g)
             srt.append((s0, e0, " ".join(w[0] for w in g)))
     open(os.path.join(WORK, "cap.ass"), "w", encoding="utf8").write(head + "\n" + "\n".join(ev))
