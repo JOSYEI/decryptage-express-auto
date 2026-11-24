@@ -1,0 +1,21 @@
+name: Blog (articles + vidéos YouTube intégrées)
+on:
+  schedule:
+    - cron: "15 */2 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  blog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python blog.py --rebuild
+      - name: Commit
+        run: |
+          git config user.name "de-auto"; git config user.email "de-auto@users.noreply.github.com"
+          git add docs; git commit -m "Blog : mise à jour" || exit 0
+          git pull --rebase -q || true; git push || true
