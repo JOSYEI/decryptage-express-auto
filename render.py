@@ -231,17 +231,22 @@ def main():
     sh(f"ffmpeg -y {ins} -filter_complex \"{fl}\" -map [v] -ar 44100 '{WORK}/voice.wav'")
     sys.path.insert(0, os.path.join(HERE, "assets")); import musicgen
     mus = os.path.join(WORK, "music.wav"); musicgen.make(mus, total + 1, random.randrange(10**6))
-    sw = ";".join(f"anoisesrc=d=0.5:c=pink:a=0.5,highpass=f=500,lowpass=f=5500,afade=t=out:d=0.4,volume=0.07,adelay={int(max(s-.3,0)*1000)}|{int(max(s-.3,0)*1000)}[w{i}]" for i, s in enumerate(starts))
     ctat = max(total - 6.0, LEAD + 2); clk = int((ctat + 1.55) * 1000)
-    sw += f";sine=f=70:d=0.7,afade=t=out:d=0.65,volume=0.9,adelay=1700|1700[bm];sine=f=1900:d=0.07,afade=t=out:d=0.06,volume=0.3,adelay={clk}|{clk}[tk]"
-    labs = ''.join(f'[w{i}]' for i in range(len(starts))) + "[bm][tk]"
-    sh(f"ffmpeg -y -filter_complex \"{sw};{labs}amix=inputs={len(starts)+2}:normalize=0[o]\" -map [o] -t {total:.2f} -ar 44100 '{WORK}/sfx.wav'")
-    sh(f"""ffmpeg -y -i '{WORK}/voice.wav' -i '{WORK}/sfx.wav' -stream_loop -1 -i '{mus}' -filter_complex "[0:a]asplit=2[k][v1];[2:a]atrim=0:{total:.2f},volume=0.30,afade=t=in:d=1,afade=t=out:st={total-3:.2f}:d=3[m];[m][k]sidechaincompress=threshold=0.02:ratio=10:attack=15:release=350[md];[md][v1][1:a]amix=inputs=3:normalize=0:duration=longest[mx];[mx]loudnorm=I=-14:TP=-1.5:LRA=11[o]" -map "[o]" -t {total:.2f} -ar 44100 '{WORK}/audio.wav'""")
+    import sfx  # ouverture, fin, 3 transitions « switch » + 3 « whoosh » tirées au hasard, cloche « cling cling » au clic sur S'abonner
+    cands = [k * seg_len for k in range(1, nseg) if 2.5 <= k * seg_len <= ctat - 1.0]
+    random.shuffle(cands); picks = []
+    for c in cands:
+        if all(abs(c - q) >= 1.2 for q in picks): picks.append(c)
+        if len(picks) == 6: break
+    picks.sort(); kinds = ["switch"] * 3 + ["whoosh"] * 3; random.shuffle(kinds)
+    sfx.build(os.path.join(WORK, "sfx.wav"), total, list(zip(picks, kinds)), ctat, clk, random.randrange(10**6))
+    sh(f"""ffmpeg -y -i '{WORK}/voice.wav' -i '{WORK}/sfx.wav' -stream_loop -1 -i '{mus}' -filter_complex "[0:a]asplit=2[k][v1];[2:a]atrim=0:{total:.2f},volume=0.30,afade=t=in:d=1,afade=t=out:st={total-3:.2f}:d=3[m];[m][k]sidechaincompress=threshold=0.02:ratio=10:attack=15:release=350[md];[md][v1][1:a]amix=inputs=3:normalize=0:duration=longest[mx];[mx]loudnorm=I=-14:TP=-0.8:LRA=11[o]" -map "[o]" -t {total:.2f} -ar 44100 '{WORK}/audio.wav'""")
     sys.path.insert(0, os.path.join(HERE, "assets")); import overlays
     ov = os.path.join(WORK, "ov"); overlays.build(ov, SHORT)
     cx, cy = ((W - 820) // 2, int(H * 0.10)) if SHORT else (W - 660, 60)
     fc = (f"[0:v]ass='{WORK}/cap.ass'[b];[2:v]format=rgba,setpts=PTS-STARTPTS+0.1/TB[l];[3:v]format=rgba,setpts=PTS-STARTPTS+{ctat:.2f}/TB[c];"
-          f"[b][l]overlay=x=(W-w)/2:y=(H-h)/2-80:eof_action=pass[b2];[b2][c]overlay=x={cx}:y={cy}:eof_action=pass[o]")
+          f"[b][l]overlay=x=(W-w)/2:y=(H-h)/2-80:eof_action=pass[b2];[b2][c]overlay=x={cx}:y={cy}:eof_action=pass[o0];"
+          f"[o0]fade=t=in:st=0.1:d=0.5:color=white,fade=t=out:st={total-0.9:.2f}:d=0.9:color=black[o]")
     sh(f"""ffmpeg -y -i '{WORK}/video.mp4' -i '{WORK}/audio.wav' -framerate 30 -i '{ov}/logo_in/%03d.png' -framerate 30 -i '{ov}/cta/%03d.png' -filter_complex "{fc}" -map "[o]" -map 1:a -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -c:a aac -b:a 192k -t {total:.2f} -movflags +faststart '{OUT}/video.mp4'""")
     import seo, cover
     S = seo.build(script, topics, MODE, [b["text"] for b in blocks])
