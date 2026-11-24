@@ -77,13 +77,17 @@ def add(D):
               open(f"docs/data/{slug}.json", "w", encoding="utf-8"), ensure_ascii=False)
 
 def rebuild():
-    idx = yt_index(); items = []
+    idx = yt_index(); items = []; print("flux YouTube :", len(idx), "vidéos")
     for f in glob.glob("docs/data/*.json"):
         a = json.load(open(f, encoding="utf-8"))
         if not a.get("yt"):
             k = norm(a["full_title"])
+            kw = set(k.split()); best = (0, None)
             for t, v in idx:
-                if t == k or t.startswith(k[:45]) or k.startswith(t[:45]): a["yt"] = v; break
+                tw = set(t.split()); j = len(kw & tw) / max(1, len(kw | tw))
+                if j > best[0]: best = (j, v)
+            print("match", round(best[0], 2), a["title"][:40])
+            if best[0] >= 0.45: a["yt"] = best[1]
             json.dump(a, open(f, "w", encoding="utf-8"), ensure_ascii=False)
         items.append(a)
     items.sort(key=lambda a: a["date"], reverse=True); items = items[:200]
