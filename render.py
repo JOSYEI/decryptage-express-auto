@@ -146,10 +146,15 @@ def block_clips(kws, need, off=0):
     return got
 
 def main():
-    topic = json.load(open(os.path.join(HERE, "topic.json")))
-    topics = topic.get("topics") or ([topic["topic"]] if topic.get("topic") else [])
-    if topic.get("status") != "ok" or not topics: print("pas de sujet :", topic.get("reason")); return
-    script = llm_script(topics[:2 if SHORT else 10]); blocks = script["blocks"]
+    if os.environ.get("PRESENTATION"):  # vidéo de présentation de la chaîne (script fixe, aucun appel LLM)
+        script = json.load(open(os.path.join(HERE, "presentation.json")))
+        topics = [{"title": script["title"], "articles": [{"title": script["title"], "source": "Décryptage Express"}], "cluster": {"items": [], "tok": []}}]
+    else:
+        topic = json.load(open(os.path.join(HERE, "topic.json")))
+        topics = topic.get("topics") or ([topic["topic"]] if topic.get("topic") else [])
+        if topic.get("status") != "ok" or not topics: print("pas de sujet :", topic.get("reason")); return
+        script = llm_script(topics[:2 if SHORT else 10])
+    blocks = script["blocks"]
     voices = []
     for i, b in enumerate(blocks):
         p = os.path.join(WORK, f"v{i}.mp3"); words = asyncio.run(say(b["text"], p)); voices.append((p, words, dur(p)))
