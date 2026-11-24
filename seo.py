@@ -25,7 +25,10 @@ def build(script, topics, mode, blocks_text, hours="00h00, 04h00, 08h00, 12h00, 
     extras = [k for k in kws if k.lower() not in title.lower() and " " not in k]
     for k in extras:
         if len(title) + len(suffix) + 3 + len(k) <= 100 and len(title + suffix) < 96: title += " | " + k if " | " not in title else " " + k
-    title = (title[: 100 - len(suffix)].rstrip() + suffix)[:100]
+    room = 100 - len(suffix)
+    if len(title) > room:
+        title = title[:room].rsplit(" ", 1)[0].rstrip(" |,;:-—")
+    title = title + suffix
     hashtags = " ".join(dict.fromkeys(script.get("hashtags", []) + ["#IA", "#DécryptageExpress"] + (["#Shorts"] if short else [])))
     transcript = " ".join(blocks_text)
     if len(transcript) > 1800: transcript = transcript[:1800].rsplit(".", 1)[0] + "."
@@ -44,6 +47,8 @@ def build(script, topics, mode, blocks_text, hours="00h00, 04h00, 08h00, 12h00, 
         body += add; i += 1
         if i > 400: break
     desc = (desc + body + tail)[:5000]
-    pinned = (f"📌 {topics[0]['title'][:120]} — selon vous, simple secousse ou vrai tournant ? Répondez en commentaire 👇 "
+    t0 = topics[0]["title"]
+    if len(t0) > 110: t0 = t0[:110].rsplit(" ", 1)[0].rstrip(" ,;:-—") + "…"
+    pinned = (f"📌 {t0} — qu'en pensez-vous ? Répondez en commentaire 👇 "
               f"Abonnez-vous à Décryptage Express pour l'actu IA, tech et bourse décryptée chaque jour. {hashtags.split(' ')[0]} #IA")
     return {"title": title, "description": desc, "tags": ",".join(tags) + ",", "pinned_comment": pinned, "hashtags": hashtags}
