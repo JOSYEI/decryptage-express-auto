@@ -28,6 +28,7 @@ def build(script, topics, mode, blocks_text, hours="00h00, 04h00, 08h00, 12h00, 
     title = (title[: 100 - len(suffix)].rstrip() + suffix)[:100]
     hashtags = " ".join(dict.fromkeys(script.get("hashtags", []) + ["#IA", "#DécryptageExpress"] + (["#Shorts"] if short else [])))
     transcript = " ".join(blocks_text)
+    if len(transcript) > 1800: transcript = transcript[:1800].rsplit(".", 1)[0] + "."
     retenir = "\n".join("• " + re.split(r"(?<=[.!?])\s", b)[0] for b in blocks_text[:8])
     desc = (f"{script['description']}\n\n👇 Dis-moi en commentaire : ce sujet te surprend-il ? 🔔 Abonne-toi à Décryptage Express pour l'actu IA, tech et bourse décryptée chaque jour.\n\n"
             f"✅ CE QU'IL FAUT RETENIR\n{retenir}\n\n📝 LE RÉSUMÉ COMPLET\n{transcript}\n\n"
