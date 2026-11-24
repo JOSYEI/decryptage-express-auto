@@ -138,8 +138,11 @@ def main():
     sh(f"ffmpeg -y -filter_complex \"{sw};{''.join(f'[w{i}]' for i in range(len(starts)))}amix=inputs={len(starts)}:normalize=0[o]\" -map [o] -t {total:.2f} -ar 44100 '{WORK}/sfx.wav'")
     sh(f"""ffmpeg -y -i '{WORK}/voice.wav' -i '{WORK}/sfx.wav' -stream_loop -1 -i '{mus}' -filter_complex "[0:a]asplit=2[k][v1];[2:a]atrim=0:{total:.2f},volume=0.13,afade=t=in:d=2,afade=t=out:st={total-3:.2f}:d=3[m];[m][k]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=500[md];[md][v1][1:a]amix=inputs=3:normalize=0:duration=longest[mx];[mx]loudnorm=I=-14:TP=-1.5:LRA=11[o]" -map "[o]" -t {total:.2f} -ar 44100 '{WORK}/audio.wav'""")
     sh(f"""ffmpeg -y -i '{WORK}/video.mp4' -i '{WORK}/audio.wav' -vf "ass='{WORK}/cap.ass'" -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -c:a aac -b:a 192k -t {total:.2f} -movflags +faststart '{OUT}/video.mp4'""")
-    json.dump({"title": script["title"][:100], "description": script["description"], "hashtags": script["hashtags"], "mode": MODE,
-               "duration": round(total, 1), "topics": [t["title"] for t in topics]}, open(os.path.join(OUT, "meta.json"), "w"), ensure_ascii=False, indent=2)
+    import seo, cover
+    S = seo.build(script, topics, MODE, [b["text"] for b in blocks])
+    cover.make(f"{WORK}/video.mp4", script["title"], "ACTU IA" if SHORT else "DÉCRYPTAGE IA", f"{OUT}/cover.jpg", SHORT)
+    json.dump({**S, "mode": MODE, "duration": round(total, 1), "language": "fr", "category": "Science et technologie", "ai_label": True,
+               "topics": [t["title"] for t in topics]}, open(os.path.join(OUT, "meta.json"), "w"), ensure_ascii=False, indent=2)
     json.dump(sorted(used), open(REG, "w"))
     print("OK", OUT, round(total, 1), "s")
 main()
