@@ -9,7 +9,7 @@ if os.path.exists(_ca):  # uniquement dans le bac à sable de test
 HERE = os.path.dirname(os.path.abspath(__file__))
 MODE = os.environ.get("MODE", "short"); SHORT = MODE == "short"
 W, H = (1080, 1920) if SHORT else (1920, 1080)
-VOICE = "fr-FR-RemyMultilingualNeural"
+VOICE = "fr-FR-VivienneMultilingualNeural"
 STAMP = dt.datetime.now().strftime("%Y-%m-%d-%H%M")
 OUT = os.path.join(HERE, "out", f"{STAMP}-{MODE}"); os.makedirs(OUT, exist_ok=True)
 WORK = os.path.join(OUT, "w"); os.makedirs(WORK, exist_ok=True)
