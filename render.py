@@ -21,12 +21,16 @@ def get(url, data=None, headers=None, t=120):
 
 PROMPT = """Tu écris pour « Décryptage Express », média français sur l'IA. Voix off sans visage, texte écrit comme un grand média :
 phrases longues et liées, connecteurs, aucun mot-étiquette (« verdict », « premier signal »), chiffres écrits en chiffres, tutoiement léger.
-Commence DIRECTEMENT par l'accroche la plus forte, sans « bonjour », sans « et si ». N'utilise QUE les faits fournis, n'invente rien,
-cite la source à voix haute. Les sujets s'enchaînent comme un seul récit, sans « affaire à suivre ». %s
-Réponds UNIQUEMENT en JSON : {"title":"titre viral à mots-clés, max 95 caractères","description":"2 phrases","hashtags":["#..."],
+STRUCTURE OBLIGATOIRE : le champ « intro » est une intro de 2 phrases qui annonce tout de suite de quoi parle la vidéo (le thème de chaque sujet, en quelques mots, dans l'ordre),
+avec l'accroche la plus forte en ouverture, sans « bonjour », sans « et si ». Ensuite « blocks » : UN bloc par sujet : chaque bloc commence par une phrase de transition naturelle
+(« On commence par… », « Dans la foulée… », « Autre dossier chaud… », « Et pendant ce temps… », variées, jamais deux fois la même) puis développe. Dernier bloc : conclusion + abonnement.
+N'utilise QUE les faits écrits dans les titres fournis : reformule-les, n'ajoute ni chiffre, ni cause, ni conséquence, ni interprétation. Cite la source à voix haute. Les sujets s'enchaînent comme un seul récit, sans « affaire à suivre ».
+Les mots-clés vidéo de chaque bloc doivent représenter LITTÉRALEMENT son sujet (objet ou lieu concret : robot, microchip, laptop code, data center, smartphone, stock market screen),
+jamais d'abstraction. Choisis-les UNIQUEMENT parmi cette liste : robot, laptop, server, code, stock-market, finance, business, data, smartphone, hacker, factory, satellite, laboratory, microscope, network, screen, keyboard, programming, drone, electronics, circuit-board, hologram, digital, technology. %s
+Réponds UNIQUEMENT en JSON : {"intro":"texte de l'intro","intro_keywords":["3 mots-clés vidéo EN ANGLAIS"],"title":"titre viral à mots-clés, max 95 caractères","description":"2 phrases","hashtags":["#..."],
 "blocks":[{"text":"narration","keywords":["3 mots-clés de recherche vidéo EN ANGLAIS, ex: server room"]}]}"""
-FORMAT = ("FORMAT SHORT : 4 à 6 blocs, 12 à 17 secondes de voix par sujet (30 à 45 mots), 55 à 65 secondes au total, dernier bloc : « Abonne-toi pour ne rien perdre des décryptages »."
-          if SHORT else "FORMAT LONG : 9 à 12 blocs de 45 à 70 mots, un changement de sujet toutes les 1 à 2 minutes, dernier bloc : « Abonne-toi pour la prochaine vidéo, à bientôt »."
+FORMAT = ("FORMAT SHORT : intro de 20 à 28 mots, puis 4 à 6 blocs, 12 à 17 secondes de voix par sujet (30 à 45 mots), 55 à 65 secondes au total, dernier bloc : « Abonne-toi pour ne rien perdre des décryptages »."
+          if SHORT else "FORMAT LONG : intro de 35 à 50 mots, puis 9 à 12 blocs de 45 à 70 mots, un changement de sujet toutes les 1 à 2 minutes, dernier bloc : « Abonne-toi pour la prochaine vidéo, à bientôt »."
 )
 
 def llm_script(topics):
@@ -44,7 +48,8 @@ def llm_script(topics):
                 out = json.loads(get("https://text.pollinations.ai/openai", body, {"Content-Type": "application/json", **UA}, 180))
             txt = out["choices"][0]["message"]["content"]
             d = json.loads(re.search(r"\{.*\}", txt, re.S).group(0))
-            assert d["blocks"] and all(b["text"] for b in d["blocks"]); return d
+            assert d["blocks"] and all(b["text"] for b in d["blocks"]) and len(d.get("intro", "")) > 40
+            d["blocks"] = [{"text": d["intro"], "keywords": d.get("intro_keywords") or d["blocks"][0].get("keywords", [])}] + d["blocks"]; return d
         except Exception as e:
             print("script retry", e, file=sys.stderr); time.sleep(46)
     sys.exit("script indisponible")
@@ -69,17 +74,30 @@ async def say(text, path):
 
 REG = os.path.join(HERE, "used_clips.json")
 used = set(json.load(open(REG))) if os.path.exists(REG) else set()
-def find_clips(kws, need):
+BAN = ("santa", "christmas", "xmas", "gift", "holiday", "snow", "winter", "party", "wedding", "baby", "celebrat", "costume", "toy")
+TECH = ["technology", "laptop", "server", "robot", "code", "stock-market", "business", "finance", "data", "smartphone", "hacker", "factory", "satellite",
+        "laboratory", "microscope", "network", "screen", "keyboard", "programming", "drone", "electronics", "circuit-board", "hologram", "digital"]
+_page = {}
+def page_ids(slug):
+    if slug in _page: return _page[slug]
     ids = []
-    for kw in kws + ["technology", "data-center", "city", "computer-chip"]:
-        slug = re.sub(r"[^a-z0-9]+", "-", kw.lower()).strip("-")
-        try: html = get(f"https://mixkit.co/free-stock-video/{slug}/").decode("utf8", "ignore")
-        except Exception: continue
-        for i in re.findall(r"assets\.mixkit\.co/videos/(\d+)/", html):
-            if i not in used and i not in ids: ids.append(i)
-        if len(ids) >= need: break
+    for att in range(3):
+        try: html = get(f"https://mixkit.co/free-stock-video/{slug}/").decode("utf8", "ignore"); ids = list(dict.fromkeys(re.findall(r"assets\.mixkit\.co/videos/(\d+)/", html))); break
+        except Exception as e:
+            if "429" in str(e): time.sleep(20 * (att + 1))
+            else: break
+    time.sleep(1.2); _page[slug] = ids; return ids
+def block_clips(kws, need, off=0):
+    cands = []
+    for kw in kws:
+        for sg in re.sub(r"[^a-z0-9]+", "-", kw.lower()).strip("-").split("-"):
+            if sg in TECH: cands += [i for i in page_ids(sg) if i not in used and i not in cands]
+        if len(cands) >= need: break
+    for k in range(len(TECH)):
+        if len(cands) >= need: break
+        cands += [i for i in page_ids(TECH[(off + k) % len(TECH)]) if i not in used and i not in cands]
     got = []
-    for i in ids:
+    for i in cands:
         f = os.path.join(WORK, f"c{i}.mp4")
         try: open(f, "wb").write(get(f"https://assets.mixkit.co/videos/{i}/{i}-720.mp4", t=90)); got.append(f); used.add(i)
         except Exception: continue
@@ -100,17 +118,25 @@ def main():
     total = t + 1.0
     # --- vidéo : plans de ~1,8 s (Short) / ~5 s (long), zoom lent, flash blanc au début de chaque sujet
     seg_len = 1.8 if SHORT else 5.0; nseg = int(total / seg_len) + 1
-    clips = find_clips(sum([b.get("keywords", []) for b in blocks], []), nseg)
-    if not clips: sys.exit("aucun clip")
-    segs = []; cur = 0.0
+    nb = len(blocks); bounds = [0.0] + starts[1:] + [total + 9]
+    blk = lambda x: max(i for i in range(nb) if x >= bounds[i] - 1e-6)
+    seg_blk = [blk(k * seg_len) for k in range(nseg)]
+    pools = {}
+    for i in range(nb):
+        need = max(2, seg_blk.count(i))
+        pools[i] = block_clips(blocks[i].get("keywords", []), need, i * 3)
+    allc = [c for i in range(nb) for c in pools[i]]
+    if not allc: sys.exit("aucun clip")
+    segs = []; cur = 0.0; cnt = {}
     for k in range(nseg):
         sd = min(seg_len, total - cur)
         if sd <= 0.05: break
-        c = clips[k % len(clips)]; o = os.path.join(WORK, f"s{k:03d}.mp4"); fr = int(sd * 30) + 1
+        pool = pools[seg_blk[k]] or allc; j = cnt.get(seg_blk[k], 0); cnt[seg_blk[k]] = j + 1
+        c = pool[j % len(pool)]; o = os.path.join(WORK, f"s{k:03d}.mp4"); fr = int(sd * 30) + 1
         z = f"zoompan=z='1.0+0.07*on/{fr}+0.10*exp(-on/6)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s={W}x{H}:fps=30"
         vf = f"fps=30,scale={int(W*1.25)}:{int(H*1.25)}:force_original_aspect_ratio=increase,crop={int(W*1.25)}:{int(H*1.25)},{z},eq=contrast=1.1:saturation=1.08:brightness=-0.03,vignette=PI/5"
         if any(abs(cur - s) < .01 or (cur <= s < cur + sd) for s in starts): vf += ",fade=t=in:st=0:d=0.14:color=white"
-        sh(f"ffmpeg -y -stream_loop -1 -ss {0.3 + (k // len(clips)) * 4.2:.2f} -t {sd + .2:.2f} -i '{c}' -vf \"{vf}\" -t {sd:.3f} -r 30 -pix_fmt yuv420p -c:v libx264 -preset veryfast -crf 21 '{o}'")
+        sh(f"ffmpeg -y -stream_loop -1 -ss {0.3 + (j // len(pool)) * 4.2:.2f} -t {sd + .2:.2f} -i '{c}' -vf \"{vf}\" -t {sd:.3f} -r 30 -pix_fmt yuv420p -c:v libx264 -preset veryfast -crf 21 '{o}'")
         segs.append(o); cur += sd
     open(os.path.join(WORK, "list.txt"), "w").write("\n".join(f"file '{os.path.basename(s)}'" for s in segs))
     sh(f"ffmpeg -y -f concat -safe 0 -i '{WORK}/list.txt' -c copy '{WORK}/video.mp4'")
@@ -120,14 +146,30 @@ def main():
     head = f"[Script Info]\nScriptType: v4.00+\nPlayResX: {W}\nPlayResY: {H}\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,OutlineColour,BackColour,Bold,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV\nStyle: D,Roboto,{fs},&H00FFFFFF,&H00000000,&H80000000,1,1,8,3,5 if False else 2,80,80,{int(H*0.38) if SHORT else 120}\n[Events]\nFormat: Layer,Start,End,Style,Text"
     head = head.replace("5 if False else 2", "2")
     stop = set("le la les un une des de du et en au aux à a ce ces sur pour par avec dans qui que est sont il elle the of to in".split())
-    ev = []
-    for (p, words, d), st in zip(voices, starts):
-        gs = [words[i:i + n] for i in range(0, len(words), n)]
+    ev = []; srt = []; prev = None
+    def clean(t): return re.sub(r"\s+", " ", t).strip()
+    for (p, words, d), st, b in zip(voices, starts, blocks):
+        toks = clean(b["text"]).split(" ")
+        if len(words) != len(toks):  # mots manquants dans la synchro : on répartit selon la longueur, aucun mot n'est perdu
+            tot = sum(len(x) + 1 for x in toks); t0 = 0.0; w2 = []
+            for x in toks:
+                dd = d * (len(x) + 1) / tot; w2.append((x, t0, t0 + dd)); t0 += dd
+            words = w2
+        else: words = [(tk, w[1], w[2]) for tk, w in zip(toks, words)]
+        gs = [words[i:i + n] for i in range(0, len(words), n)]; prev = None
         for gi, g in enumerate(gs):
-            s = st + g[0][1]; e = st + gs[gi + 1][0][1] - .03 if gi + 1 < len(gs) else st + g[-1][2] + .15
-            txt = " ".join(("{\\c&H00D7FF&}" + w[0].upper() + "{\\c&HFFFFFF&}") if (len(w[0]) > 6 and w[0].lower() not in stop and (gi + words.index(w)) % 3 == 0) else w[0].upper() for w in g)
-            ev.append(f"Dialogue: 0,{ts(s)},{ts(max(e, s + .1))},D,{{\\fscx85\\fscy85\\t(0,110,\\fscx105\\fscy105)\\t(110,190,\\fscx100\\fscy100)}}{txt}")
+            s0 = st + g[0][1]; e0 = st + gs[gi + 1][0][1] - .03 if gi + 1 < len(gs) else st + g[-1][2] + .15
+            e0 = max(e0, s0 + .1)
+            txt = " ".join(("{\\c&H00D7FF&}" + w[0].upper() + "{\\c&HFFFFFF&}") if (len(w[0]) > 6 and w[0].lower().strip(",.;:!?") not in stop and (gi * n + g.index(w)) % 3 == 0) else w[0].upper() for w in g)
+            yb = int(H * 0.62) if SHORT else H - 120
+            ev.append(f"Dialogue: 0,{ts(s0)},{ts(e0)},D,{{\\an2\\pos({W//2},{yb})\\fscx85\\fscy85\\t(0,110,\\fscx105\\fscy105)\\t(110,190,\\fscx100\\fscy100)}}{txt}")
+            if prev:  # ancienne ligne au-dessus, fondu léger, jamais superposée
+                ev.append(f"Dialogue: 1,{ts(s0)},{ts(min(e0, s0 + .9))},D,{{\\an2\\pos({W//2},{yb - int(fs * 1.55)})\\alpha&H70&\\fad(0,250)}}{prev}")
+            prev = " ".join(w[0].upper() for w in g)
+            srt.append((s0, e0, " ".join(w[0] for w in g)))
     open(os.path.join(WORK, "cap.ass"), "w", encoding="utf8").write(head + "\n" + "\n".join(ev))
+    fm = lambda x: f"{int(x//3600):02d}:{int(x%3600//60):02d}:{int(x%60):02d},{int(x*1000)%1000:03d}"
+    open(os.path.join(OUT, "subs.srt"), "w", encoding="utf8").write("\n".join(f"{i+1}\n{fm(a)} --> {fm(b)}\n{t}\n" for i, (a, b, t) in enumerate(srt)))
     # --- audio : voix + musique cinématique basse (sidechain) + whoosh très discrets, loudnorm
     ins = " ".join(f"-i '{p}'" for p, _, _ in voices)
     fl = "".join(f"[{i}:a]adelay={int(s*1000)}|{int(s*1000)},volume=1.3[a{i}];" for i, s in enumerate(starts))
