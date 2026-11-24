@@ -33,7 +33,7 @@ Les mots-clés vidéo de chaque bloc doivent représenter LITTÉRALEMENT son suj
 jamais d'abstraction. Choisis-les UNIQUEMENT parmi cette liste : robot, laptop, server, code, stock-market, finance, business, data, smartphone, hacker, factory, satellite, laboratory, microscope, network, screen, keyboard, programming, drone, electronics, circuit-board, hologram, digital, technology. %s
 Réponds UNIQUEMENT en JSON : {"intro":"texte de l'intro","intro_keywords":["3 mots-clés vidéo EN ANGLAIS"],"title":"titre viral à mots-clés, max 95 caractères","description":"2 phrases","hashtags":["#..."],
 "blocks":[{"text":"narration","keywords":["3 mots-clés de recherche vidéo EN ANGLAIS, ex: server room"]}]}"""
-FORMAT = ("FORMAT SHORT : intro de 40 à 55 mots, puis 4 à 6 blocs, 9 à 12 secondes de voix par sujet (25 à 32 mots), 55 à 70 secondes au total, dernier bloc : « Abonne-toi pour ne rien perdre des décryptages »."
+FORMAT = ("FORMAT SHORT : intro de 20 à 30 mots, puis 1 à 2 blocs (UN sujet par bloc, développé à fond : fait, chiffres, raison, conséquence) de 45 à 60 mots chacun, 45 à 60 secondes au total, dernier bloc : « Abonne-toi pour ne rien perdre des décryptages »."
           if SHORT else "FORMAT LONG : intro de 70 à 100 mots, puis 9 à 12 blocs de 45 à 70 mots, un changement de sujet toutes les 1 à 2 minutes, dernier bloc : « Abonne-toi pour la prochaine vidéo, à bientôt »."
 )
 
@@ -74,7 +74,7 @@ def llm_script(topics):
             for k, bk in enumerate(d["blocks"][:-1]): bk["text"] = (TR[k] if k < len(TR) else "Aussi :") + " " + bk["text"]
             if len(d["blocks"]) > 2: d["blocks"][-2]["text"] = re.sub(r"^[^:]+:", "Dernier dossier :", d["blocks"][-2]["text"])
             d["blocks"] = [{"text": d["intro"], "keywords": d.get("intro_keywords") or d["blocks"][0].get("keywords", [])}] + d["blocks"]
-            tgt = 190 if SHORT else 700
+            tgt = 150 if SHORT else 700
             if best is None or abs(nw - tgt) < best[0]: best = (abs(nw - tgt), d)
             assert (nw <= 210) if SHORT else (350 <= nw <= 1100), f"longueur {nw} mots hors cible"
             return d
@@ -149,7 +149,7 @@ def main():
     topic = json.load(open(os.path.join(HERE, "topic.json")))
     topics = topic.get("topics") or ([topic["topic"]] if topic.get("topic") else [])
     if topic.get("status") != "ok" or not topics: print("pas de sujet :", topic.get("reason")); return
-    script = llm_script(topics[:6 if SHORT else 10]); blocks = script["blocks"]
+    script = llm_script(topics[:2 if SHORT else 10]); blocks = script["blocks"]
     voices = []
     for i, b in enumerate(blocks):
         p = os.path.join(WORK, f"v{i}.mp3"); words = asyncio.run(say(b["text"], p)); voices.append((p, words, dur(p)))
