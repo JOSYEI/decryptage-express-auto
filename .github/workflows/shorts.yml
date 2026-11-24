@@ -1,14 +1,14 @@
 name: Short (collecte 1 h avant publication)
 # Heures de Paris en hiver (UTC+1). Collecte : 23h 03h 07h 11h 15h 19h -> publication 00h 04h 08h 12h 16h 20h.
-# Rythme allégé jusqu'à dimanche : seuls 07h (-> 08h) et 19h (-> 20h) sont actifs ; décommenter les autres ensuite.
+# 6 Shorts par jour, toutes les 4 heures (le cloud n'utilise pas le quota de Claude).
 on:
   schedule:
-    - cron: "0 6 * * *"    # collecte 07h Paris -> Short 08h
-    - cron: "0 18 * * *"   # collecte 19h Paris -> Short 20h
-    # - cron: "0 22 * * *" # 23h -> 00h
-    # - cron: "0 2 * * *"  # 03h -> 04h
-    # - cron: "0 10 * * *" # 11h -> 12h
-    # - cron: "0 14 * * *" # 15h -> 16h
+    - cron: "0 22 * * *"   # collecte 23h Paris -> Short 00h
+    - cron: "0 2 * * *"    # collecte 03h -> Short 04h
+    - cron: "0 6 * * *"    # collecte 07h -> Short 08h
+    - cron: "0 10 * * *"   # collecte 11h -> Short 12h
+    - cron: "0 14 * * *"   # collecte 15h -> Short 16h
+    - cron: "0 18 * * *"   # collecte 19h -> Short 20h
   workflow_dispatch:
 permissions:
   contents: write
