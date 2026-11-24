@@ -34,6 +34,22 @@ jobs:
             out/*/video.mp4
             out/*/meta.json
           retention-days: 7
+      - name: Publier (Release + Make)
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HOOK: ${{ secrets.MAKE_WEBHOOK_URL }}
+        run: |
+          D=$(ls -d out/*-long 2>/dev/null | tail -1)
+          [ -n "$D" ] && [ -f "$D/video.mp4" ] || { echo "pas de vidéo"; exit 0; }
+          TAG="long-$(date +%Y%m%d-%H%M)"
+          gh release create "$TAG" "$D/video.mp4" "$D/cover.jpg" "$D/meta.json" --title "$TAG" --notes "Vidéo long automatique"
+          B="https://github.com/${{ github.repository }}/releases/download/$TAG"
+          [ -n "$HOOK" ] || { echo "MAKE_WEBHOOK_URL absent : publication non envoyée"; exit 0; }
+          jq -n --arg mode "long" --arg v "$B/video.mp4" --arg c "$B/cover.jpg" \
+            --slurpfile m "$D/meta.json" \
+            '{mode:$mode, video_url:$v, cover_url:$c, title:$m[0].title, description:$m[0].description, tags:$m[0].tags, fb_text:($m[0].description[0:2000]), pinned_comment:$m[0].pinned_comment}' \
+            | curl -sS -X POST -H "Content-Type: application/json" -d @- "$HOOK"
       - name: Journal
         run: |
           git config user.name "de-auto"; git config user.email "de-auto@users.noreply.github.com"
