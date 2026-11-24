@@ -42,7 +42,7 @@ def build(path, total, trans, ctat, clk, seed=0):
         j = min(len(out), i + len(sig)); out[i:j] += sig[:j - i] * g
     sw_f = [(2600, 1700, .045), (3200, 2100, .06), (2100, 1300, .035), (3600, 2400, .05), (1900, 1100, .07)]; rnd.shuffle(sw_f)
     wh_p = [(.5, .02, .15, True), (.7, .03, .25, False), (.4, .015, .1, True), (.85, .04, .2, False), (.6, .025, .3, True)]; rnd.shuffle(wh_p)
-    add(boom(1.4, rnd.choice([36, 40, 44]), rnd.randrange(999)), 0, .5); add(whoosh(rnd.randrange(999), .7, .02, .15, True), 0, .35)  # ouverture
+    add(riser(1.0), 0, .35); add(boom(1.6, rnd.choice([36, 40, 44]), rnd.randrange(999)), .95, .55); add(whoosh(rnd.randrange(999), .8, .02, .15, True), .75, .35)  # ouverture cinématique : montée, puis impact à l'ouverture des bandes
     add(riser(), total - 1.9, .4); add(boom(1.2, rnd.choice([50, 54, 58]), rnd.randrange(999)), total - .6, .5)  # fin (différente de l'ouverture)
     si = wi = 0
     for k, (t, kind) in enumerate(trans):
