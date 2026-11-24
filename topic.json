@@ -3,82 +3,99 @@
   "status": "ok",
   "reason": "",
   "topic": {
-    "title": "Jensen Huang témoignera devant le Sénat américain le 3 décembre, après son retour surprise chez Nvidia",
-    "score": 68.3,
-    "trusted_sources": 1,
+    "title": "Donald Trump fait revenir Jensen Huang à la tête de Nvidia… Et ajoute 17 millions de dollars à sa fortune personnelle grâce au rebond en bourse",
+    "score": 84.6,
+    "trusted_sources": 16,
     "articles": [
       {
-        "title": "Jensen Huang témoignera devant le Sénat américain le 3 décembre, après son retour surprise chez Nvidia",
-        "source": "ZDNET",
-        "link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQMlBoakpOSEdsMDZYcnlYd2lVTG5hYkYyOHlMNnVULU5Odk1hYkhEWFZhci1yTlo5dEZ0ZmUzeEd2Y29tWmxaSnZtZU11Sm5PUEJ1NXVTSnlmX0ZkWnNRMENKWlEwemNQLV9iV2NtOXJYUy14b0dQOWRkWXlaRHJjUkxFY3VReEdQa1FWYXAxYzJfQUZHUGFsUGtscVZKNmVKV2JuN1c5MVplMXhEV245UXRhMHQ1T0dHTVZ4TkJzcW5kczRyeWJTZkZwZ1FINjJqY1FwR3hRSEt4OTBB?oc=5",
-        "published": "2026-11-24T05:59:54+00:00"
+        "title": "Donald Trump fait revenir Jensen Huang à la tête de Nvidia… Et ajoute 17 millions de dollars à sa fortune personnelle grâce au rebond en bourse",
+        "source": "Midi Libre",
+        "link": "https://news.google.com/rss/articles/CBMimwJBVV95cUxOcjdMUG5ValRrSmE2UkpYOTh4bmFUbnZpOGVkU0pLb2RudXduVGpWaFgydlh6T1RacXpBdUMwaXktenhLalFEeS12OHNnM2dOS3JwNjB5dVppZjZJc2FDbjFOci04QWRCZW1LdmZ4WWRWVDE5b0l4WExLUzdoX1NlVUM5azFNeGxvN2JFUHNHYkM0RzVpS19Cc3U4anl2b3hpb0dBdkNyeTY3RldpYkVBUTNYS0ZrSDZHbUJEaHNRRXY0VW8wcWNqZ002UEhZWnBmaFVVb2lCN1hWUHR1MDAzSlYtMnRZaThfN2I5YjhTczZMWUJtd1V4Q0JSNml2SXlBbUlmcmlOQVJId2VQNkpheUlwa0hsREl6RGlz?oc=5",
+        "published": "2026-11-24T09:50:00+00:00"
+      },
+      {
+        "title": "Nvidia : le retour de Jensen Huang rassure les marchés",
+        "source": "Le Revenu",
+        "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxOVk1RS0N3TGFNbHBTeDZrZ3VrWTVWY2dZQ0NkVC1ZQ3pHZ292RWFGaDR0Skk2a1VSSHljY3pFemFONXAwSmRrMmtYaXoxekszZmpyMlhYSTRhS3VJRm1qUjlmcDRsdVhaY2pxQzdWT0NIdXRrU1dGa251T1hXRFQyZ0xDQVYxYjcySUhvUVBvUFVidUZQSDM0bjcxX0FzSkpWS1E5SXQyZXplQzdi?oc=5",
+        "published": "2026-11-24T09:17:00+00:00"
+      },
+      {
+        "title": "Les Experts : Nvidia, retour fracassant de Jensen Huang - 24/11",
+        "source": "Orange Actualités",
+        "link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPcHR4b005YVBHdHo3OEtzTllkODh3NE9LZ0NhR2pNWFBOTzVPNmpDQjRnQXVpWUQ4QmE0dVgzNXU1Yk1Jd0xERXFVbHJBVXdCSG9IZzJGazZZRGY5TzMySFFLSkRFbVBSS1FHdzRnUV9DSTlpb3ZXTzVER3ZPMDRuRUx5Z1pYWU40OGtyd2FGa2lJYlFralEtZlVkdW9VNXZ4ejZPNXRjaFBYbjNfWTBzdnNlNnhKYjVI?oc=5",
+        "published": "2026-11-24T09:13:03+00:00"
+      },
+      {
+        "title": "Nvidia : D.Trump derrière le coup ?",
+        "source": "BFM",
+        "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQSHRyMmRyOXl6ODQ3cVJoZ2VCX2trc1Bmdlo3WmZudnRVZ2pKeGZhd2hXODNLRDRQWTQyQjRNMjJwMDNLOEc4YWRDdHh0VDRCdWRYck13SXJGOHYtMVlyQVZoN2llSFFBMFY5WjRWSEF6TkpWRnZaMTR3NDc5ZkhiaHR4dVEybHJkaUEyekZ2LXVlVEJzMFFaSVZPdjRxM01OcGpSQXJYTDdLNTRvd0RRdmlnRjlGeXIzY1E?oc=5",
+        "published": "2026-11-24T09:08:32+00:00"
+      },
+      {
+        "title": "Le come-back spectaculaire de Jensen Huang à la tête de Nvidia, sous la pression de Donald Trump et des marchés financiers",
+        "source": "Le Monde.fr",
+        "link": "https://news.google.com/rss/articles/CBMimgJBVV95cUxPTXdYV3lENEVmOEhfanhZMVlTeTVzRVVPa20zbjhmd1N1Yms1OGYta3hFMFlZMmJaZkNVS2UyYkpUWmZEbzZxdzJXT2o0TC02bDJwMGRuTTB4akJIdFlqSUFHNVJWbUcwVUR5akVIeU9yY1FaTmtndHczMndlNVhHd2QtTFRoYWg4SXBxblQzYzUwVzBiQ3RDZDFZaFlFdjRNSUtqMWt0cHVYbFRWUldLbUJyUWpObk1hQ2t1NTM4WlNqUFVMb1VxWVZBWnBxLUUzTTVmTl83U1EtMXI3Y2k1M2JXc0d1aHlNRm05bGFXZW1GbVRCTkY3c0poXzFGd19oVzlHdk9yZkt2aWs0b0UwOFZuVEZxRWM5VkE?oc=5",
+        "published": "2026-11-24T09:00:35+00:00"
+      },
+      {
+        "title": "Les Bourses en Asie flambent après le retour de Jensen Huang chez Nvidia",
+        "source": "France 24",
+        "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxNZXdaN1lFOE9kOVQ0SDhEQ0hKdFFzejQ3eHlkd1JMWFc4N2tJTjYzcVdLbjdvS2RieE5LdHVkVUtCcmhkaTFPTWN2dXlnakpCZjlubDZhRi1UYTdCckZSQmh1ZGNUTkJ1bkdRcGdYNGk0ckxoeHluZTJJcVptTVZjNlZramhxTEl3ZlN2UFBWNlZralR4VkpZNG41UzlHTjV0dEgxMHJ5WkFlbG5lUWZiM181YWlzeFdUSFhLam90YjY4TWZKb1VDUElB?oc=5",
+        "published": "2026-11-24T08:46:23+00:00"
+      },
+      {
+        "title": "Les Bourses en Asie flambent après le retour de Jensen Huang chez Nvidia",
+        "source": "tv5monde",
+        "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNM3NJajZVQll6ZGNGMFotSnl2LTJzMjNIOGRCVnEwWGhnNENDRWxRMjFzbnJ5OU5JZFhZWGlCWFF5R2xub2llWUxlNk1McmhDemoyLWdUeFpLZVgzbVUwWjJVQUttWEp4eHdsbDdaV0VrMVZMeXFvVi0xOTB4ZWhOLV90Y1hFRHUwY2RnX1N3aWJKSFE2OG41UW5lY0puOGZOYmhmbVVhZkxNaXVSb1VkbHVMVW50OFF6RmJIMTNzYw?oc=5",
+        "published": "2026-11-24T08:43:20+00:00"
+      },
+      {
+        "title": "Nvidia : Jensen Huang de retour, comment expliquer ce revirement de situation ?",
+        "source": "TF1+",
+        "link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxQS3dRSVhycGxVYklONkhBcmNZZ2FienF3MlA0anpISDY3T3dESnBSWFZVN0J6eWZEbXdCdE55TS12UEdwOFAyWWpDOUc1TUplYllwUnVqa1FoU0tuOUhhRXRTbW0zc3JZWnpVbno4MVhTVnRRZ2J6N2tpUURUUkxKVlFKemhGM1llVldOZURUOThrclk3cGpZSEtwNlJ1TU4wU1B6bFZ3X3gwNjBXQjF4Y0NGNlhtSDBvWU1aNnBJN3g4cURBVHFHSTRON0E3SzhLbERMYXRlY2VjUQ?oc=5",
+        "published": "2026-11-24T08:30:10+00:00"
       }
     ]
   },
   "topics": [
     {
-      "title": "Jensen Huang témoignera devant le Sénat américain le 3 décembre, après son retour surprise chez Nvidia",
+      "title": "Donald Trump fait revenir Jensen Huang à la tête de Nvidia… Et ajoute 17 millions de dollars à sa fortune personnelle grâce au rebond en bourse",
       "articles": [
         {
-          "title": "Jensen Huang témoignera devant le Sénat américain le 3 décembre, après son retour surprise chez Nvidia",
-          "source": "ZDNET",
-          "link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQMlBoakpOSEdsMDZYcnlYd2lVTG5hYkYyOHlMNnVULU5Odk1hYkhEWFZhci1yTlo5dEZ0ZmUzeEd2Y29tWmxaSnZtZU11Sm5PUEJ1NXVTSnlmX0ZkWnNRMENKWlEwemNQLV9iV2NtOXJYUy14b0dQOWRkWXlaRHJjUkxFY3VReEdQa1FWYXAxYzJfQUZHUGFsUGtscVZKNmVKV2JuN1c5MVplMXhEV245UXRhMHQ1T0dHTVZ4TkJzcW5kczRyeWJTZkZwZ1FINjJqY1FwR3hRSEt4OTBB?oc=5",
-          "published": "2026-11-24T05:59:54+00:00"
-        }
-      ]
-    },
-    {
-      "title": "Le Pitch : Kaïdo, un tuteur IA pour enfant, sans écran - 24/11",
-      "articles": [
+          "title": "Donald Trump fait revenir Jensen Huang à la tête de Nvidia… Et ajoute 17 millions de dollars à sa fortune personnelle grâce au rebond en bourse",
+          "source": "Midi Libre",
+          "link": "https://news.google.com/rss/articles/CBMimwJBVV95cUxOcjdMUG5ValRrSmE2UkpYOTh4bmFUbnZpOGVkU0pLb2RudXduVGpWaFgydlh6T1RacXpBdUMwaXktenhLalFEeS12OHNnM2dOS3JwNjB5dVppZjZJc2FDbjFOci04QWRCZW1LdmZ4WWRWVDE5b0l4WExLUzdoX1NlVUM5azFNeGxvN2JFUHNHYkM0RzVpS19Cc3U4anl2b3hpb0dBdkNyeTY3RldpYkVBUTNYS0ZrSDZHbUJEaHNRRXY0VW8wcWNqZ002UEhZWnBmaFVVb2lCN1hWUHR1MDAzSlYtMnRZaThfN2I5YjhTczZMWUJtd1V4Q0JSNml2SXlBbUlmcmlOQVJId2VQNkpheUlwa0hsREl6RGlz?oc=5",
+          "published": "2026-11-24T09:50:00+00:00"
+        },
         {
-          "title": "Le Pitch : Kaïdo, un tuteur IA pour enfant, sans écran - 24/11",
+          "title": "Nvidia : le retour de Jensen Huang rassure les marchés",
+          "source": "Le Revenu",
+          "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxOVk1RS0N3TGFNbHBTeDZrZ3VrWTVWY2dZQ0NkVC1ZQ3pHZ292RWFGaDR0Skk2a1VSSHljY3pFemFONXAwSmRrMmtYaXoxekszZmpyMlhYSTRhS3VJRm1qUjlmcDRsdVhaY2pxQzdWT0NIdXRrU1dGa251T1hXRFQyZ0xDQVYxYjcySUhvUVBvUFVidUZQSDM0bjcxX0FzSkpWS1E5SXQyZXplQzdi?oc=5",
+          "published": "2026-11-24T09:17:00+00:00"
+        },
+        {
+          "title": "Les Experts : Nvidia, retour fracassant de Jensen Huang - 24/11",
+          "source": "Orange Actualités",
+          "link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPcHR4b005YVBHdHo3OEtzTllkODh3NE9LZ0NhR2pNWFBOTzVPNmpDQjRnQXVpWUQ4QmE0dVgzNXU1Yk1Jd0xERXFVbHJBVXdCSG9IZzJGazZZRGY5TzMySFFLSkRFbVBSS1FHdzRnUV9DSTlpb3ZXTzVER3ZPMDRuRUx5Z1pYWU40OGtyd2FGa2lJYlFralEtZlVkdW9VNXZ4ejZPNXRjaFBYbjNfWTBzdnNlNnhKYjVI?oc=5",
+          "published": "2026-11-24T09:13:03+00:00"
+        },
+        {
+          "title": "Nvidia : D.Trump derrière le coup ?",
           "source": "BFM",
-          "link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxNWUJwTWRFUmNWcEpzQUFaMnpJTGhQMHhGRk9SMlNfWDRLTkQ1TFppcE1GbWFBSzgtN3dPclR6djRaZzc3SXdHX1ZsY01qRjJkQ0YtV2Rfa0Mwc3lvdklHMGthNWJQUFZWWDJVWjl5Z3VuZ0FVVm8waXdRbEFBdC0yR25ZczFEd1NPeXVxWjkzZ0h1bXhfYzZrMGFjalZQZjZKWXJhcFNCM2cxdTBqRDlrY1BvUVdzSGU5M3EwNVFLSndUVTdNZi02LTUwS2szUGhHZ193S2xTRQ?oc=5",
-          "published": "2026-11-24T06:14:42+00:00"
-        }
-      ]
-    },
-    {
-      "title": "2026, le début de la fin du boom financier de l'intelligence artificielle ?",
-      "articles": [
+          "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQSHRyMmRyOXl6ODQ3cVJoZ2VCX2trc1Bmdlo3WmZudnRVZ2pKeGZhd2hXODNLRDRQWTQyQjRNMjJwMDNLOEc4YWRDdHh0VDRCdWRYck13SXJGOHYtMVlyQVZoN2llSFFBMFY5WjRWSEF6TkpWRnZaMTR3NDc5ZkhiaHR4dVEybHJkaUEyekZ2LXVlVEJzMFFaSVZPdjRxM01OcGpSQXJYTDdLNTRvd0RRdmlnRjlGeXIzY1E?oc=5",
+          "published": "2026-11-24T09:08:32+00:00"
+        },
         {
-          "title": "2026, le début de la fin du boom financier de l'intelligence artificielle ?",
-          "source": "Les Echos",
-          "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNUFdGU2dUc1FTZ0xFU2wtQ3pBX1I0TDdxRUFDZTRxdTdJNkEzaTUxOGo4TlFMT3dOLUNmSVRlWVA2QWJ2bk1zWTJfWWNHN0NTTjF6b24tcWVBNlFGZkUwQ295MG5sM1lZRDNfYUFINHVxQlBZZy1ReVVHR0xFQlR0YTdnTzJUTkdEMDBwUHhUTVN1SF9jTmtKUlNBTjVWSW1uQXpvYnRoX0ROOHlaOE1aZmFHZ1ZlbENvem4tdGplR1N3WG9GaEpBZVVlTkk?oc=5",
-          "published": "2026-11-24T06:10:09+00:00"
-        }
-      ]
-    },
-    {
-      "title": "Le prix du Bitcoin chute sous $61,000 : le rallye de Nvidia était-il un piège haussier ?",
-      "articles": [
+          "title": "Le come-back spectaculaire de Jensen Huang à la tête de Nvidia, sous la pression de Donald Trump et des marchés financiers",
+          "source": "Le Monde.fr",
+          "link": "https://news.google.com/rss/articles/CBMimgJBVV95cUxPTXdYV3lENEVmOEhfanhZMVlTeTVzRVVPa20zbjhmd1N1Yms1OGYta3hFMFlZMmJaZkNVS2UyYkpUWmZEbzZxdzJXT2o0TC02bDJwMGRuTTB4akJIdFlqSUFHNVJWbUcwVUR5akVIeU9yY1FaTmtndHczMndlNVhHd2QtTFRoYWg4SXBxblQzYzUwVzBiQ3RDZDFZaFlFdjRNSUtqMWt0cHVYbFRWUldLbUJyUWpObk1hQ2t1NTM4WlNqUFVMb1VxWVZBWnBxLUUzTTVmTl83U1EtMXI3Y2k1M2JXc0d1aHlNRm05bGFXZW1GbVRCTkY3c0poXzFGd19oVzlHdk9yZkt2aWs0b0UwOFZuVEZxRWM5VkE?oc=5",
+          "published": "2026-11-24T09:00:35+00:00"
+        },
         {
-          "title": "Le prix du Bitcoin chute sous $61,000 : le rallye de Nvidia était-il un piège haussier ?",
-          "source": "Invezz",
-          "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNelpzWFZJV3doQ0pWZ2p0bG5JeUZrY3lUUTRMeVdidTZ6b1NfR3ZFRDJoOHpsdVNBejZYRXRKYmVkbk1iNlZGbjk5SEVkM2p1ZFFIV2ZHR0d6eVh3cWkxSkIyMVNmbXVfUnNoQkNodzNJazlPV1Z5NVctd2lDZXotRjJTS29QVXpsX2tmbGQwWTNUUlE0TU9XeWIzWGd1aXZ1YTlJQjMzT1BrakF6bEkxaDJLOWp4THRteEV2V2RMMjVyMnBlY05FUE9aLUJsZw?oc=5",
-          "published": "2026-11-24T06:31:00+00:00"
-        }
-      ]
-    },
-    {
-      "title": "Jensen Huang à Nvidia : l’action bondit de 30% à Wall Street",
-      "articles": [
-        {
-          "title": "Jensen Huang à Nvidia : l’action bondit de 30% à Wall Street",
-          "source": "toulouse7.com",
-          "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQVmZ2YnNiRkpIUzh6YkRiV28xLUpUNjRJQUU2QThxMjVPWXVIWjJNRXN5d2VxX3N0QVFtTnZDNENQejhmQVg5SE1Gb3kzWk5Ub1hHWFZYakpuR2lBcTZfdGZWMWhfUHFzYkpuV1RER2Z2TEJQZFN1Z0lSb3FQQ29wdEh6Q2RnNjlKRDM1Nm1OY0gzQjlP?oc=5",
-          "published": "2026-11-24T06:30:36+00:00"
-        }
-      ]
-    },
-    {
-      "title": "Nvidia : cinq milliardaires gagnent 123 milliards de dollars sur le papier",
-      "articles": [
-        {
-          "title": "Nvidia : cinq milliardaires gagnent 123 milliards de dollars sur le papier",
-          "source": "Economie Matin",
-          "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOamJmQUZtWGdiakZlMmY5QnFrSHFybnBXdUtPN3F2aS1ua1lnR0luTXNLWWFRUGZkejBGaThkNllkNmhwdXZaMzllQ2kyZGw4ZDJDdkozRmFzd2xrdE1PSVZKcDFHd2R2a3c3MnpHbk5SbERjSWEtZnhTUnVKUGozZEZpV1Y?oc=5",
-          "published": "2026-11-24T06:15:00+00:00"
+          "title": "Les Bourses en Asie flambent après le retour de Jensen Huang chez Nvidia",
+          "source": "France 24",
+          "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxNZXdaN1lFOE9kOVQ0SDhEQ0hKdFFzejQ3eHlkd1JMWFc4N2tJTjYzcVdLbjdvS2RieE5LdHVkVUtCcmhkaTFPTWN2dXlnakpCZjlubDZhRi1UYTdCckZSQmh1ZGNUTkJ1bkdRcGdYNGk0ckxoeHluZTJJcVptTVZjNlZramhxTEl3ZlN2UFBWNlZralR4VkpZNG41UzlHTjV0dEgxMHJ5WkFlbG5lUWZiM181YWlzeFdUSFhLam90YjY4TWZKb1VDUElB?oc=5",
+          "published": "2026-11-24T08:46:23+00:00"
         }
       ]
     }
