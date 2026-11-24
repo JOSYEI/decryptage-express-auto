@@ -1,0 +1,29 @@
+name: Bilan analytics quotidien
+# 10h Paris (09h UTC) : statistiques des dernières 24 h, bilan dans bilans/, consignes d'amélioration pour les prochains scripts.
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bilan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Bilan
+        env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+        run: python bilan.py
+      - name: Enregistrer
+        run: |
+          git config user.name "de-auto"; git config user.email "de-auto@users.noreply.github.com"
+          git add bilans perf.json insights.json
+          git commit -m "Bilan analytics du jour" || true
+          git pull --rebase -q || true
+          git push || true
