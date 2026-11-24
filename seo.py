@@ -28,6 +28,8 @@ def build(script, topics, mode, blocks_text, hours="00h00, 04h00, 08h00, 12h00, 
     room = 100 - len(suffix)
     if len(title) > room:
         title = title[:room].rsplit(" ", 1)[0].rstrip(" |,;:-—")
+        while title.split(" ")[-1].lower() in ("du", "de", "des", "la", "le", "les", "un", "une", "et", "à", "au", "aux", "en", "sur", "pour", "que", "qui") and " " in title:
+            title = title.rsplit(" ", 1)[0].rstrip(" |,;:-—")
     title = title + suffix
     hashtags = " ".join(dict.fromkeys(script.get("hashtags", []) + ["#IA", "#DécryptageExpress"] + (["#Shorts"] if short else [])))
     transcript = " ".join(blocks_text)
