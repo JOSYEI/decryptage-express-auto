@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://josyei.github.io/decryptage-express-auto/sitemap.xml
