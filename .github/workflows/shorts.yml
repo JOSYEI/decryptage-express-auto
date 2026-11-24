@@ -56,10 +56,10 @@ jobs:
           B="https://github.com/${{ github.repository }}/releases/download/$TAG"
           [ -n "$HOOK" ] || { echo "MAKE_WEBHOOK_URL absent : publication non envoyée"; exit 0; }
           SKIP=false; python publish.py "$D" && SKIP=true || true
-          # Rotation fixe (sans condition de quota) : Make = Shorts de 00h, 08h, 16h ; Buffer = 04h, 12h, 20h
-          H=$(date -u +%H); DAY=$(date -u +%d)
-          case "$H" in 22|23|06|07|14|15) FULL=true;; *) FULL=false;; esac
-          case "$H" in 18|19) [ "$DAY" -le 20 ] && IGM=true || IGM=false;; *) IGM=false;; esac
+          # Rotation : YouTube en direct (publish.py, 0 opération Make). Make publie Facebook reel + Instagram pour TOUS les Shorts
+          # (full=true) ; si YouTube direct a échoué (SKIP=false), Make le publie aussi en secours. Buffer ne fait plus que TikTok.
+          # Metricool n'est plus nécessaire (Instagram passe par Make : ig_metricool toujours false).
+          FULL=true; IGM=false
           jq -n --argjson full "$FULL" --argjson igm "$IGM" --argjson skip "$SKIP" --arg mode "short" --arg v "$B/video.mp4" --arg c "$B/cover.jpg" \
             --arg ig "$(python igtext.py "$D")" --slurpfile m "$D/meta.json" \
             '{full:$full, ig_metricool:$igm, skip_youtube:$skip, mode:$mode, video_url:$v, cover_url:$c, title:$m[0].title, description:$m[0].description, tags:$m[0].tags, fb_text:($m[0].description[0:2000]), ig_text:$ig, pinned_comment:$m[0].pinned_comment}' \
