@@ -212,8 +212,13 @@ def main():
             s0 = st + g[0][1]; e0 = st + gs[gi + 1][0][1] - .03 if gi + 1 < len(gs) else st + g[-1][2] + .15
             e0 = max(e0, s0 + .1)
             txt = " ".join(("{\\c&H00D7FF&}" + w[0].upper() + "{\\c&HFFFFFF&}") if (len(w[0]) > 6 and w[0].lower().strip(",.;:!?") not in stop and (gi * n + g.index(w)) % 3 == 0) else w[0].upper() for w in g)
-            yb = int(H * 0.62) if SHORT else H - 120
-            ev.append(f"Dialogue: 0,{ts(s0)},{ts(e0)},D,{{\\an2\\pos({W//2},{yb})\\fscx85\\fscy85\\t(0,110,\\fscx105\\fscy105)\\t(110,190,\\fscx100\\fscy100)}}{txt}")
+            yb = H // 2
+            mx = max(len(w[0]) for w in g); tot = sum(len(w[0]) for w in g) + len(g) - 1
+            fsz = int(min(fs * 1.3, .9 * W / (.62 * max(tot, 1))))
+            rot = random.choice([-3, -2, 0, 2, 3])
+            fx = ("{\\an5\\pos(%d,%d)\\fs%d\\bord12\\shad5\\blur1.5\\frz%d\\fscx55\\fscy55\\alpha&H80&"
+                  "\\t(0,90,\\fscx118\\fscy118\\alpha&H00&)\\t(90,170,\\fscx100\\fscy100)}" % (W // 2, yb, fsz, rot))
+            ev.append(f"Dialogue: 0,{ts(s0)},{ts(e0)},D,{fx}{txt}")
             prev = " ".join(w[0].upper() for w in g)
             srt.append((s0, e0, " ".join(w[0] for w in g)))
     open(os.path.join(WORK, "cap.ass"), "w", encoding="utf8").write(head + "\n" + "\n".join(ev))
@@ -224,13 +229,14 @@ def main():
     fl = "".join(f"[{i}:a]adelay={int(s*1000)}|{int(s*1000)},volume=1.3[a{i}];" for i, s in enumerate(starts))
     fl += "".join(f"[a{i}]" for i in range(len(voices))) + f"amix=inputs={len(voices)}:normalize=0,apad,atrim=0:{total:.2f}[v]"
     sh(f"ffmpeg -y {ins} -filter_complex \"{fl}\" -map [v] -ar 44100 '{WORK}/voice.wav'")
-    mus = random.choice(glob.glob(os.path.join(HERE, "assets", "music", "*.mp3")))
+    sys.path.insert(0, os.path.join(HERE, "assets")); import musicgen
+    mus = os.path.join(WORK, "music.wav"); musicgen.make(mus, total + 1, random.randrange(10**6))
     sw = ";".join(f"anoisesrc=d=0.5:c=pink:a=0.5,highpass=f=500,lowpass=f=5500,afade=t=out:d=0.4,volume=0.07,adelay={int(max(s-.3,0)*1000)}|{int(max(s-.3,0)*1000)}[w{i}]" for i, s in enumerate(starts))
     ctat = max(total - 6.0, LEAD + 2); clk = int((ctat + 1.55) * 1000)
     sw += f";sine=f=70:d=0.7,afade=t=out:d=0.65,volume=0.9,adelay=1700|1700[bm];sine=f=1900:d=0.07,afade=t=out:d=0.06,volume=0.3,adelay={clk}|{clk}[tk]"
     labs = ''.join(f'[w{i}]' for i in range(len(starts))) + "[bm][tk]"
     sh(f"ffmpeg -y -filter_complex \"{sw};{labs}amix=inputs={len(starts)+2}:normalize=0[o]\" -map [o] -t {total:.2f} -ar 44100 '{WORK}/sfx.wav'")
-    sh(f"""ffmpeg -y -i '{WORK}/voice.wav' -i '{WORK}/sfx.wav' -stream_loop -1 -i '{mus}' -filter_complex "[0:a]asplit=2[k][v1];[2:a]atrim=0:{total:.2f},volume=0.13,afade=t=in:d=2,afade=t=out:st={total-3:.2f}:d=3[m];[m][k]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=500[md];[md][v1][1:a]amix=inputs=3:normalize=0:duration=longest[mx];[mx]loudnorm=I=-14:TP=-1.5:LRA=11[o]" -map "[o]" -t {total:.2f} -ar 44100 '{WORK}/audio.wav'""")
+    sh(f"""ffmpeg -y -i '{WORK}/voice.wav' -i '{WORK}/sfx.wav' -stream_loop -1 -i '{mus}' -filter_complex "[0:a]asplit=2[k][v1];[2:a]atrim=0:{total:.2f},volume=0.30,afade=t=in:d=1,afade=t=out:st={total-3:.2f}:d=3[m];[m][k]sidechaincompress=threshold=0.02:ratio=10:attack=15:release=350[md];[md][v1][1:a]amix=inputs=3:normalize=0:duration=longest[mx];[mx]loudnorm=I=-14:TP=-1.5:LRA=11[o]" -map "[o]" -t {total:.2f} -ar 44100 '{WORK}/audio.wav'""")
     sys.path.insert(0, os.path.join(HERE, "assets")); import overlays
     ov = os.path.join(WORK, "ov"); overlays.build(ov, SHORT)
     cx, cy = ((W - 820) // 2, int(H * 0.10)) if SHORT else (W - 660, 60)
