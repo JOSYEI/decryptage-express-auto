@@ -10,14 +10,19 @@ import urllib.parse, urllib.request
 import xml.etree.ElementTree as ET
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+# Planning définitif (24/11/2026) : MODE=short -> actu des 60 dernières minutes ;
+# MODE=long -> actu des 24 dernières heures (veille 10h -> jour 10h). Cible : tout sujet IA.
+MODE = os.environ.get("MODE", "short")
 QUERIES = [
-    "robot humanoïde", "robots humanoïdes", "humanoid robot",
-    "Tesla Optimus", "Figure AI robot", "Unitree robot", "Boston Dynamics Atlas",
-    "Agility Robotics Digit", "1X NEO robot", "Apptronik Apollo",
+    "intelligence artificielle", "IA", "OpenAI", "Nvidia", "Anthropic Claude", "agents IA",
+    "robot humanoïde", "bulle IA", "Europe IA régulation", "puces IA", "ChatGPT", "DeepSeek",
+    "Google DeepMind", "Meta IA", "Mistral AI", "Tesla Optimus", "Sciences et technologies",
 ]
-MIN_SCORE = 50          # en dessous : pas de vidéo ce jour-là
-MIN_TRUSTED = 2         # sources fiables différentes minimum
-MAX_AGE_H = 30
+WHEN = "1h" if MODE == "short" else "1d"
+MIN_SCORE = 30 if MODE == "short" else 50
+MIN_TRUSTED = 0 if MODE == "short" else 2
+AI_KW = ["ia ", " ia", "intelligence artificielle", "openai", "nvidia", "anthropic", "claude", "chatgpt", "gpt", "gemini", "deepseek", "mistral", "agent", "robot", "puce", "llm", "deepmind", "copilot", "ai ", " ai", "optimus", "xai", "grok", "llama"]
+MAX_AGE_H = 1.5 if MODE == "short" else 25
 
 TRUSTED = [
     "le monde", "les echos", "les échos", "le figaro", "bfm", "numerama", "clubic",
@@ -71,7 +76,7 @@ def same_story(a, b):
 
 
 def parse_feed(q):
-    url = ("https://news.google.com/rss/search?q=" + urllib.parse.quote(q + " when:1d")
+    url = ("https://news.google.com/rss/search?q=" + urllib.parse.quote(q + " when:" + WHEN)
            + "&hl=fr&gl=FR&ceid=FR:fr")
     root = ET.fromstring(fetch(url))
     out = []
@@ -135,6 +140,9 @@ def main():
     scored = []
     for c in clusters:
         items = c["items"]
+        _t = " " + " ".join(i["title"].lower() for i in items) + " "
+        if not any(k in _t for k in AI_KW):
+            continue
         trusted = {i["source"].lower() for i in items if is_trusted(i["source"])}
         allsrc = {i["source"].lower() for i in items}
         newest = min(i["age_h"] for i in items)

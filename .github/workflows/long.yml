@@ -1,0 +1,36 @@
+name: Vidéo longue (collecte 10h -> publication 11h)
+# 09h UTC = 10h Paris en hiver. Fenêtre d'actu : veille 10h -> jour 10h.
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  long:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: pip install pillow edge-tts numpy
+      - name: Collecte (actu des 24 dernières heures)
+        env: { MODE: long }
+        run: python collect.py
+      - name: Production
+        env:
+          MODE: long
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          OUT_DIR: out
+        run: python produce.py
+      - name: Journal
+        run: |
+          git config user.name "de-auto"; git config user.email "de-auto@users.noreply.github.com"
+          git add history.json log.csv topic.json 2>/dev/null || true
+          git commit -m "Journal vidéo longue" || true
+          git push || true

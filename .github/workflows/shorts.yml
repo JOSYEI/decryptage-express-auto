@@ -1,0 +1,42 @@
+name: Short (collecte 1 h avant publication)
+# Heures de Paris en hiver (UTC+1). Collecte : 23h 03h 07h 11h 15h 19h -> publication 00h 04h 08h 12h 16h 20h.
+# Rythme allégé jusqu'à dimanche : seuls 07h (-> 08h) et 19h (-> 20h) sont actifs ; décommenter les autres ensuite.
+on:
+  schedule:
+    - cron: "0 6 * * *"    # collecte 07h Paris -> Short 08h
+    - cron: "0 18 * * *"   # collecte 19h Paris -> Short 20h
+    # - cron: "0 22 * * *" # 23h -> 00h
+    # - cron: "0 2 * * *"  # 03h -> 04h
+    # - cron: "0 10 * * *" # 11h -> 12h
+    # - cron: "0 14 * * *" # 15h -> 16h
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  short:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: pip install pillow edge-tts numpy
+      - name: Collecte (actu des 60 dernières minutes)
+        env: { MODE: short }
+        run: python collect.py
+      - name: Production
+        env:
+          MODE: short
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          OUT_DIR: out
+        run: python produce.py
+      - name: Journal
+        run: |
+          git config user.name "de-auto"; git config user.email "de-auto@users.noreply.github.com"
+          git add history.json log.csv topic.json 2>/dev/null || true
+          git commit -m "Journal Short" || true
+          git push || true
