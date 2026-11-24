@@ -250,7 +250,7 @@ def main():
     ov = os.path.join(WORK, "ov"); overlays.build(ov, SHORT)
     cx, cy = ((W - 820) // 2, int(H * 0.10)) if SHORT else (W - 660, 60)
     import inserts
-    inserts.intro(os.path.join(WORK, "intro"), W, H)
+    inserts.intro(os.path.join(WORK, "intro"), W, H); inserts.outro(os.path.join(WORK, "outro"), W, H)
     cw, chh = (760, 330) if SHORT else (560, 250); px, py = ((W - cw) // 2, int(H * 0.115)) if SHORT else (60, 60)
     pw, ph = (760, 428) if SHORT else (560, 315); ppx, ppy = ((W - pw) // 2, int(H * 0.115)) if SHORT else (60, 60)
     cards = []; busy = [(0, 2.8), (ctat - .4, ctat + 3.9)]  # intro et animation S'abonner : zone réservée
@@ -272,9 +272,10 @@ def main():
           f"[b][l]overlay=x=(W-w)/2:y=(H-h)/2-80:eof_action=pass[b2];[b2][c]overlay=x={cx}:y={cy}:eof_action=pass[cur];")
     for k, (t0_, dd, x_, y_) in enumerate(cards):
         fc += f"[{5 + k}:v]format=rgba,setpts=PTS-STARTPTS+{t0_:.2f}/TB[k{k}];[cur][k{k}]overlay=x={x_}:y={y_}:eof_action=pass[cur];"
-    fc += f"[cur][it]overlay=0:0:eof_action=pass[o0];[o0]fade=t=out:st={total-0.9:.2f}:d=0.9:color=black[o]"
+    no = 5 + len(cards)
+    fc += f"[{no}:v]format=rgba,setpts=PTS-STARTPTS+{total-1.7:.2f}/TB[ot];[cur][it]overlay=0:0:eof_action=pass[o0];[o0][ot]overlay=0:0:eof_action=pass[o1];[o1]fade=t=out:st={total-0.5:.2f}:d=0.5:color=black[o]"
     card_in = "".join(f" -framerate 30 -i '{dd}/%03d.png'" for _, dd, _, _ in cards)
-    sh(f"""ffmpeg -y -i '{WORK}/video.mp4' -i '{WORK}/audio.wav' -framerate 30 -i '{ov}/logo_in/%03d.png' -framerate 30 -i '{ov}/cta/%03d.png' -framerate 30 -i '{WORK}/intro/%03d.png'{card_in} -filter_complex "{fc}" -map "[o]" -map 1:a -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -c:a aac -b:a 192k -t {total:.2f} -movflags +faststart '{OUT}/video.mp4'""")
+    sh(f"""ffmpeg -y -i '{WORK}/video.mp4' -i '{WORK}/audio.wav' -framerate 30 -i '{ov}/logo_in/%03d.png' -framerate 30 -i '{ov}/cta/%03d.png' -framerate 30 -i '{WORK}/intro/%03d.png'{card_in} -framerate 30 -i '{WORK}/outro/%03d.png' -filter_complex "{fc}" -map "[o]" -map 1:a -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -c:a aac -b:a 192k -t {total:.2f} -movflags +faststart '{OUT}/video.mp4'""")
     import seo, cover
     S = seo.build(script, topics, MODE, [b["text"] for b in blocks])
     cover.make(f"{WORK}/video.mp4", script["title"], "ACTU IA" if SHORT else "DÉCRYPTAGE IA", f"{OUT}/cover.jpg", SHORT)

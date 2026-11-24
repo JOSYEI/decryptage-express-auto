@@ -17,36 +17,56 @@ def _finish(im, a, out, i):
     if a < 1: im.putalpha(im.getchannel("A").point(lambda v: int(v * a)))
     im.save(f"{out}/{i:03d}.png")
 
+def _title_layer(W, H, title, f, ty, a, track, blur):
+    ws = [ImageDraw.Draw(Image.new("RGBA", (4, 4))).textlength(c, font=f) + W * .006 + track for c in title]; tw = sum(ws)
+    lay = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(lay); x = W / 2 - tw / 2
+    for k, c in enumerate(title):
+        d.text((x, ty), c, font=f, fill=(255, 255, 255, int(255 * a)), stroke_width=4, stroke_fill=(0, 0, 0, int(255 * a))); x += ws[k]
+    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0)); gd = ImageDraw.Draw(glow); x = W / 2 - tw / 2
+    for k, c in enumerate(title):
+        gd.text((x, ty), c, font=f, fill=(255, 214, 0, int(150 * a)), stroke_width=6, stroke_fill=(255, 214, 0, int(90 * a))); x += ws[k]
+    if blur > .3: lay = lay.filter(ImageFilter.GaussianBlur(blur))
+    return Image.alpha_composite(glow.filter(ImageFilter.GaussianBlur(12)), lay), tw
+
+def _fit(W, H, title):
+    fs = int(W * (.075 if H > W else .05)); f = font(fs); _d = ImageDraw.Draw(Image.new("RGBA", (10, 10)))
+    while fs > 20 and sum(_d.textlength(c, font=f) + W * .006 for c in title) > W * .80: fs -= 4; f = font(fs)
+    return f
+
 def intro(out, W, H, dur=2.6):
-    """Ouverture cinématique : écran noir, trait de lumière, bandes cinéma qui s'ouvrent, titre lettre par lettre avec balayage de lumière."""
+    """Ouverture premium : fondu doux depuis le noir, halo d'or, filets lumineux qui se tracent depuis le centre, titre qui se pose (flou -> net, espacement qui se resserre)."""
     os.makedirs(out, exist_ok=True); N = int(dur * FPS); title = "DÉCRYPTAGE EXPRESS"
-    fs = int(W * (.075 if H > W else .05)); f = font(fs); ty = int(H * (.80 if H > W else .86))
-    _d = ImageDraw.Draw(Image.new("RGBA", (10, 10)))
-    while fs > 20 and sum(_d.textlength(c, font=f) + W * .006 for c in title) > W * .86: fs -= 4; f = font(fs)
+    f = _fit(W, H, title); ty = int(H * (.80 if H > W else .86)); th = int(f.size * 1.2)
     for i in range(N):
-        t = i / FPS; im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
-        open_k = ease((t - .35) / 1.0)
-        bar = int(H / 2 * (1 - open_k)) + (int(H * .075) * (1 if t < dur - .5 else max(0, (dur - t) / .5)) * open_k if t > .35 else 0)
-        bar = int(bar)
-        d.rectangle((0, 0, W, bar), fill=(0, 0, 0, 255)); d.rectangle((0, H - bar, W, H), fill=(0, 0, 0, 255))
-        if t < .55:  # trait de lumière horizontal qui s'ouvre
-            k = ease(t / .35); half = int(W * .5 * k); a = int(255 * (1 - max(0, (t - .35) / .2)))
-            d.rectangle((W // 2 - half, H // 2 - 2, W // 2 + half, H // 2 + 2), fill=(255, 235, 150, a))
-        # titre : lettres qui apparaissent en cascade
-        if .7 <= t <= dur:
-            tt = t - .7; chars = list(title); widths = [d.textlength(c, font=f) + W * .006 for c in chars]; tw = sum(widths)
-            x = W / 2 - tw / 2; glow = Image.new("RGBA", (W, H), (0, 0, 0, 0)); gd = ImageDraw.Draw(glow)
-            for k, c in enumerate(chars):
-                a = ease((tt - k * .045) / .25) * min(1, max(0, (dur - t) / .4))
-                if a > 0:
-                    dy = int((1 - ease((tt - k * .045) / .25)) * 24)
-                    col = (255, 255, 255, int(255 * a)); gd.text((x, ty + dy), c, font=f, fill=(255, 214, 0, int(160 * a)), stroke_width=6, stroke_fill=(255, 214, 0, int(120 * a)))
-                    d.text((x, ty + dy), c, font=f, fill=col, stroke_width=4, stroke_fill=(0, 0, 0, int(255 * a)))
-                x += widths[k]
-            im = Image.alpha_composite(glow.filter(ImageFilter.GaussianBlur(10)), im)
-            d = ImageDraw.Draw(im)
-            sx = int((W + 400) * ease((tt - .2) / 1.0)) - 200  # balayage de lumière
-            if 0 < tt - .2 < 1.0: d.polygon([(sx, ty - 10), (sx + 60, ty - 10), (sx + 20, ty + int(f.size * 1.3)), (sx - 40, ty + int(f.size * 1.3))], fill=(255, 255, 255, 70))
+        t = i / FPS; im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        veil = int(255 * (1 - ease((t - .1) / 1.1)))  # le noir se dissipe en douceur
+        if veil > 0: im = Image.alpha_composite(im, Image.new("RGBA", (W, H), (0, 0, 0, veil)))
+        hk = ease((t - .2) / .8) * (1 - ease((t - 1.6) / .8))  # halo d'or doux
+        if hk > 0:
+            h = Image.new("RGBA", (W, H), (0, 0, 0, 0)); hd = ImageDraw.Draw(h); r = int(W * .5)
+            hd.ellipse((W // 2 - r, ty + th // 2 - r // 3, W // 2 + r, ty + th // 2 + r // 3), fill=(255, 200, 60, int(70 * hk)))
+            im = Image.alpha_composite(im, h.filter(ImageFilter.GaussianBlur(60)))
+        ta = ease((t - .55) / .9) * min(1, max(0, (dur - t) / .45))
+        if ta > 0:
+            lay, tw = _title_layer(W, H, title, f, ty, ta, (1 - ease((t - .55) / 1.3)) * W * .02, (1 - ease((t - .55) / .8)) * 14)
+            im = Image.alpha_composite(im, lay)
+            lk = ease((t - .75) / .9) * min(1, max(0, (dur - t) / .45)); half = int(tw / 2 * lk); d = ImageDraw.Draw(im)
+            for yy in (ty - int(th * .22), ty + int(th * 1.12)):
+                d.rectangle((W // 2 - half, yy, W // 2 + half, yy + 2), fill=(255, 214, 0, int(230 * lk)))
+        im.save(f"{out}/{i:03d}.png")
+
+def outro(out, W, H, dur=1.7):
+    """Fermeture premium : le cadre se voile, le nom se pose au centre entre deux filets d'or, puis fondu au noir."""
+    os.makedirs(out, exist_ok=True); N = int(dur * FPS); title = "DÉCRYPTAGE EXPRESS"; f = _fit(W, H, title); ty = int(H * .47)
+    for i in range(N):
+        t = i / FPS; im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        im = Image.alpha_composite(im, Image.new("RGBA", (W, H), (0, 0, 0, int(215 * ease(t / .6)))))
+        ta = ease((t - .25) / .6) * (1 - ease((t - 1.35) / .3))
+        if ta > 0:
+            lay, tw = _title_layer(W, H, title, f, ty, ta, (1 - ease((t - .25) / .8)) * W * .012, 0)
+            im = Image.alpha_composite(im, lay); d = ImageDraw.Draw(im); half = int(tw / 2 * ease((t - .3) / .6)); th = int(f.size * 1.2)
+            for yy in (ty - int(th * .22), ty + int(th * 1.12)):
+                d.rectangle((W // 2 - half, yy, W // 2 + half, yy + 2), fill=(255, 214, 0, int(230 * ta)))
         im.save(f"{out}/{i:03d}.png")
 
 def _card_base(w, h, a=1.0):

@@ -1,55 +1,53 @@
-"""Effets sonores synthétiques (numpy) : ouverture, fin, transitions (switch / whoosh), cloche d'abonnement. Tous audibles : crêtes ~ -0,8 dB avant mixage."""
-import numpy as np, wave
+"""Effets sonores 100 % tonals (aucun bruit blanc : pas d'effet « sable »). Très discrets, chaque son différent dans une même vidéo."""
+import numpy as np, wave, random
 SR = 44100
-def _noise(n, seed): return np.random.default_rng(seed).standard_normal(n)
-def _lp(x, a):  # filtre passe-bas simple
-    y = np.zeros_like(x); s = 0.0
-    for i, v in enumerate(x): s += a * (v - s); y[i] = s
-    return y
-def whoosh(seed=0, dur=.55, a_lo=.02, a_hi=.15, up=True):
+def _t(n): return np.arange(n) / SR
+def _norm(y, g=1.0): return y / max(abs(y).max(), 1e-6) * g
+def ping(f=2400, dur=.35):  # tic doux de commutateur : cloche sinusoïdale très courte + harmonique
+    n = int(dur * SR); t = _t(n)
+    y = np.sin(2 * np.pi * f * t) * np.exp(-t / .05) + .35 * np.sin(2 * np.pi * f * 2.01 * t) * np.exp(-t / .03)
+    y *= np.minimum(t / .002, 1); return _norm(y)
+def tick_pair(f1=2400, f2=1600, gap=.06):
+    y = np.zeros(int(.5 * SR)); a = ping(f1, .25); b = ping(f2, .25) * .7; i = int(gap * SR)
+    y[:len(a)] += a; y[i:i + len(b)] += b[:len(y) - i]; return _norm(y)
+def glide(f0=300, f1=900, dur=.6):  # souffle tonal : glissando lisse (sinus + octave), enveloppe en cloche, sans bruit
     n = int(dur * SR); t = np.linspace(0, 1, n)
-    x = _noise(n, seed); lo = _lp(x, a_lo)
-    hi = x - _lp(x, a_hi)
-    sweep = lo * (1 - t) + hi * t if up else hi * (1 - t) + lo * t  # grave -> aigu (ou l'inverse) : effet « wash »
-    env = np.sin(np.pi * t) ** 1.5
-    y = sweep * env; return y / max(abs(y).max(), 1e-6) * .9
-def switch(seed=0, f1=2600, f2=1700, gap=.045):  # « clac » sec de commutateur : deux clics rapprochés
-    n = int(.12 * SR); t = np.arange(n) / SR; y = np.zeros(n)
-    for off, f, g in ((0, f1, 1), (gap, f2, .75)):
-        i = int(off * SR); m = n - i; tt = np.arange(m) / SR
-        y[i:] += (np.sin(2 * np.pi * f * tt) * .6 + _noise(m, seed + i) * .5) * np.exp(-tt / .012) * g
-    return y / max(abs(y).max(), 1e-6) * .9
-def boom(dur=1.4, f0=38, seed=5):
-    n = int(dur * SR); t = np.arange(n) / SR
-    k = np.sin(2 * np.pi * np.cumsum(f0 + 120 * np.exp(-t * 6)) / SR) * np.exp(-t / .5)
-    sh = _lp(_noise(n, seed), .5) * np.exp(-t / .35) * .35
-    return (k + sh) / max(abs(k + sh).max(), 1e-6) * .9
-def riser(dur=1.3):
-    n = int(dur * SR); t = np.linspace(0, 1, n); x = _noise(n, 8)
-    y = (x - _lp(x, .1)) * t ** 2.2 + np.sin(2 * np.pi * np.cumsum(200 + 1400 * t ** 2) / SR) * .3 * t
-    return y / max(abs(y).max(), 1e-6) * .8
-def bell(dur=1.2, f=1760):  # « cling » : partiels inharmoniques de cloche
-    n = int(dur * SR); t = np.arange(n) / SR
-    y = sum(a * np.sin(2 * np.pi * f * r * t) * np.exp(-t / d) for r, a, d in ((1, 1, .5), (2.76, .5, .3), (5.4, .3, .18), (8.93, .2, .1)))
-    y *= np.minimum(t / .002, 1); return y / max(abs(y).max(), 1e-6) * .85
+    f = f0 * (f1 / f0) ** (t ** 1.2); ph = 2 * np.pi * np.cumsum(f) / SR
+    y = (np.sin(ph) + .4 * np.sin(2 * ph) + .2 * np.sin(1.5 * ph)) * np.sin(np.pi * t) ** 2.2
+    return _norm(y)
+def swell(dur=1.2, root=110, up=True):  # nappe d'accord (quinte + octave) qui monte ou retombe : montée « premium »
+    n = int(dur * SR); t = _t(n); u = t / dur
+    y = sum(a * (np.sin(2 * np.pi * root * r * t) + .5 * np.sin(2 * np.pi * root * r * 1.003 * t)) for r, a in ((1, 1), (1.5, .7), (2, .6), (3, .3), (4, .15)))
+    env = (u ** 2.2) if up else (1 - u) ** 1.5
+    return _norm(y * env * np.minimum((dur - t) / .08, 1))
+def impact(f0=50, dur=1.8):  # impact cinématique propre : sub profond + accord chaud, sans bruit
+    n = int(dur * SR); t = _t(n)
+    sub = np.sin(2 * np.pi * np.cumsum(f0 + 60 * np.exp(-t * 14)) / SR) * np.exp(-t / .55)
+    chord = sum(a * np.sin(2 * np.pi * f0 * 4 * r * t) * np.exp(-t / d) for r, a, d in ((1, .5, .9), (1.5, .35, .8), (2, .3, .7), (2.52, .2, .6)))
+    y = sub + .5 * chord; y *= np.minimum(t / .004, 1); return _norm(y)
+def bell(dur=1.4, f=1760):  # « cling » doux, partiels inharmoniques
+    n = int(dur * SR); t = _t(n)
+    y = sum(a * np.sin(2 * np.pi * f * r * t) * np.exp(-t / d) for r, a, d in ((1, 1, .6), (2.76, .45, .35), (5.4, .22, .2), (8.93, .1, .1)))
+    y *= np.minimum(t / .003, 1); return _norm(y)
+
 def build(path, total, trans, ctat, clk, seed=0):
-    """trans : liste (temps, 'switch'|'whoosh'). Chaque son d'une même vidéo est DIFFÉRENT (jamais deux fois le même). Niveaux discrets sous la voix."""
-    import random; rnd = random.Random(seed)
-    out = np.zeros(int((total + 2) * SR))
-    def add(sig, t0, g=1.0):
+    """trans : [(temps, 'switch'|'whoosh')]. Niveaux volontairement très bas : on doit tendre l'oreille pour les entendre."""
+    rnd = random.Random(seed); out = np.zeros(int((total + 2) * SR))
+    def add(sig, t0, g):
         i = int(max(t0, 0) * SR)
         if i >= len(out): return
         j = min(len(out), i + len(sig)); out[i:j] += sig[:j - i] * g
-    sw_f = [(2600, 1700, .045), (3200, 2100, .06), (2100, 1300, .035), (3600, 2400, .05), (1900, 1100, .07)]; rnd.shuffle(sw_f)
-    wh_p = [(.5, .02, .15, True), (.7, .03, .25, False), (.4, .015, .1, True), (.85, .04, .2, False), (.6, .025, .3, True)]; rnd.shuffle(wh_p)
-    add(riser(1.0), 0, .35); add(boom(1.6, rnd.choice([36, 40, 44]), rnd.randrange(999)), .95, .55); add(whoosh(rnd.randrange(999), .8, .02, .15, True), .75, .35)  # ouverture cinématique : montée, puis impact à l'ouverture des bandes
-    add(riser(), total - 1.9, .4); add(boom(1.2, rnd.choice([50, 54, 58]), rnd.randrange(999)), total - .6, .5)  # fin (différente de l'ouverture)
+    sw = [(2400, 1600, .06), (3000, 2000, .05), (1900, 1250, .07), (3400, 2300, .045), (2700, 1800, .055)]; rnd.shuffle(sw)
+    gl = [(260, 820, .6), (900, 280, .7), (180, 640, .5), (1100, 380, .8), (340, 1000, .55)]; rnd.shuffle(gl)
+    roots = [98, 110, 123.5, 87.3]; rnd.shuffle(roots)
+    add(swell(1.1, roots[0], True), 0, .10); add(impact(rnd.choice([46, 49, 52]), 1.8), 1.0, .12)   # ouverture : montée d'accord puis impact doux
+    add(swell(1.2, roots[1], True), total - 1.7, .09); add(impact(rnd.choice([55, 58, 62]), 1.6), total - .55, .11)  # fin
     si = wi = 0
-    for k, (t, kind) in enumerate(trans):
+    for t, kind in trans:
         if kind == "switch":
-            f1, f2, g = sw_f[si % len(sw_f)]; si += 1; add(switch(rnd.randrange(999), f1, f2, g), t, .4)
+            a, b, g = sw[si % len(sw)]; si += 1; add(tick_pair(a, b, g), t, .08)
         else:
-            d, a, b, up = wh_p[wi % len(wh_p)]; wi += 1; add(whoosh(rnd.randrange(999), d, a, b, up), t - d * .45, .35)
-    add(bell(1.2, 1760), clk / 1000 + .05, .3); add(bell(1.2, 2093), clk / 1000 + .32, .28)  # cling cling : deux notes différentes
-    out = out[:int((total) * SR)]; out = np.clip(out, -1, 1)
-    with wave.open(path, "wb") as w: w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR); w.writeframes((out * 32767 * .93).astype(np.int16).tobytes())
+            f0, f1, d = gl[wi % len(gl)]; wi += 1; add(glide(f0, f1, d), t - d * .5, .07)
+    add(bell(1.4, 1760), clk / 1000 + .05, .10); add(bell(1.4, 2093), clk / 1000 + .32, .09)   # cling cling, légèrement
+    out = np.clip(out[:int(total * SR)], -1, 1)
+    with wave.open(path, "wb") as w: w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR); w.writeframes((out * 32767).astype(np.int16).tobytes())
