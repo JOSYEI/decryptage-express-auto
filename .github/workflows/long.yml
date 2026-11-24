@@ -51,8 +51,8 @@ jobs:
           [ -n "$HOOK" ] || { echo "MAKE_WEBHOOK_URL absent : publication non envoyée"; exit 0; }
           SKIP=false; python publish.py "$D" && SKIP=true || true
           jq -n --argjson skip "$SKIP" --arg mode "long" --arg v "$B/video.mp4" --arg c "$B/cover.jpg" \
-            --slurpfile m "$D/meta.json" \
-            '{skip_youtube:$skip, mode:$mode, video_url:$v, cover_url:$c, title:$m[0].title, description:$m[0].description, tags:$m[0].tags, fb_text:($m[0].description[0:2000]), pinned_comment:$m[0].pinned_comment}' \
+            --arg ig "$(python igtext.py "$D")" --slurpfile m "$D/meta.json" \
+            '{skip_youtube:$skip, mode:$mode, video_url:$v, cover_url:$c, title:$m[0].title, description:$m[0].description, tags:$m[0].tags, fb_text:($m[0].description[0:2000]), ig_text:$ig, pinned_comment:$m[0].pinned_comment}' \
             | curl -sS -X POST -H "Content-Type: application/json" -d @- "$HOOK"
       - name: Journal
         run: |
