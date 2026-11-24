@@ -21,23 +21,29 @@ def get(url, data=None, headers=None, t=120):
 
 PROMPT = """Tu écris pour « Décryptage Express », média français sur l'IA. Voix off sans visage, texte écrit comme un grand média :
 phrases longues et liées, connecteurs, aucun mot-étiquette (« verdict », « premier signal »), chiffres écrits en chiffres, tutoiement léger.
-STRUCTURE OBLIGATOIRE : le champ « intro » est une intro de 2 phrases qui annonce tout de suite de quoi parle la vidéo (le thème de chaque sujet, en quelques mots, dans l'ordre),
-avec l'accroche la plus forte en ouverture, sans « bonjour », sans « et si ». Ensuite « blocks » : UN bloc par sujet : chaque bloc commence par une phrase de transition naturelle
+STRUCTURE OBLIGATOIRE : le champ « intro » est une vraie présentation : elle commence par la date du jour (« Nous sommes le … » avec la DATE DU JOUR fournie), puis annonce chaque sujet dans l'ordre
+avec l'information brute : le fait, le chiffre clé s'il existe, et en une demi-phrase pourquoi on en parle. Sans « bonjour », sans « et si ».
+Chaque bloc doit être riche en information : 1) le fait précis avec tous les chiffres, noms, montants des titres ; 2) la raison, pourquoi cela arrive ; 3) ce que cela change concrètement pour le spectateur. Pas de phrases vagues ni de remplissage.
+STYLE CAPTIVANT ET PUISSANT : ouverture choc, phrases percutantes qui alternent courtes et longues, tension et enjeu (ce qu'on gagne, ce qu'on risque), chiffres mis en valeur, comparaisons concrètes qui parlent,
+une chute marquante à la fin de chaque bloc, ton de journaliste passionné qui décrypte les coulisses, jamais de ton neutre ni scolaire. Ensuite « blocks » : UN bloc par sujet : chaque bloc commence par une phrase de transition naturelle
 (« On commence par… », « Dans la foulée… », « Autre dossier chaud… », « Et pendant ce temps… », variées, jamais deux fois la même) puis développe. Dernier bloc : conclusion + abonnement.
-N'utilise QUE les faits écrits dans les titres fournis : reformule-les, n'ajoute aucun chiffre inventé. Ne cite JAMAIS les sources ni les médias (pas de « selon », pas de nom de site) : à la place, explique le pourquoi, la raison de chaque fait, en t'appuyant uniquement sur ce que disent les titres (si la raison n'y est pas, explique l'enjeu pour le spectateur sans inventer de fait). Les sujets s'enchaînent comme un seul récit, sans « affaire à suivre ».
+N'utilise QUE les faits écrits dans les titres fournis : reformule-les, n'ajoute AUCUN chiffre, pourcentage ni date qui ne soit pas écrit dans les titres fournis (un chiffre inventé est une faute grave). Ne cite JAMAIS les sources ni les médias (pas de « selon », pas de nom de site) : à la place, explique le pourquoi, la raison de chaque fait, en t'appuyant uniquement sur ce que disent les titres (si la raison n'y est pas, explique l'enjeu pour le spectateur sans inventer de fait). Les sujets s'enchaînent comme un seul récit, sans « affaire à suivre ».
 Les mots-clés vidéo de chaque bloc doivent représenter LITTÉRALEMENT son sujet (objet ou lieu concret : robot, microchip, laptop code, data center, smartphone, stock market screen),
 jamais d'abstraction. Choisis-les UNIQUEMENT parmi cette liste : robot, laptop, server, code, stock-market, finance, business, data, smartphone, hacker, factory, satellite, laboratory, microscope, network, screen, keyboard, programming, drone, electronics, circuit-board, hologram, digital, technology. %s
 Réponds UNIQUEMENT en JSON : {"intro":"texte de l'intro","intro_keywords":["3 mots-clés vidéo EN ANGLAIS"],"title":"titre viral à mots-clés, max 95 caractères","description":"2 phrases","hashtags":["#..."],
 "blocks":[{"text":"narration","keywords":["3 mots-clés de recherche vidéo EN ANGLAIS, ex: server room"]}]}"""
-FORMAT = ("FORMAT SHORT : intro de 20 à 28 mots, puis 4 à 6 blocs, 12 à 17 secondes de voix par sujet (30 à 45 mots), 55 à 65 secondes au total, dernier bloc : « Abonne-toi pour ne rien perdre des décryptages »."
-          if SHORT else "FORMAT LONG : intro de 35 à 50 mots, puis 9 à 12 blocs de 45 à 70 mots, un changement de sujet toutes les 1 à 2 minutes, dernier bloc : « Abonne-toi pour la prochaine vidéo, à bientôt »."
+FORMAT = ("FORMAT SHORT : intro de 40 à 55 mots, puis 4 à 6 blocs, 9 à 12 secondes de voix par sujet (25 à 32 mots), 55 à 70 secondes au total, dernier bloc : « Abonne-toi pour ne rien perdre des décryptages »."
+          if SHORT else "FORMAT LONG : intro de 70 à 100 mots, puis 9 à 12 blocs de 45 à 70 mots, un changement de sujet toutes les 1 à 2 minutes, dernier bloc : « Abonne-toi pour la prochaine vidéo, à bientôt »."
 )
 
 def llm_script(topics):
     facts = "\n".join(f"SUJET {i+1} : {t['title']}\n" + "\n".join(f"- {a['title']}" for a in t['articles'][:4]) for i, t in enumerate(topics))
+    J = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]; M = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+    n = dt.datetime.now(); facts = f"DATE DU JOUR : {J[n.weekday()]} {n.day}{'er' if n.day == 1 else ''} {M[n.month]} {n.year}\n\n" + facts
     msgs = [{"role": "system", "content": PROMPT % FORMAT}, {"role": "user", "content": facts}]
     key = os.environ.get("LLM_API_KEY")
-    for attempt in range(4):
+    best = None
+    for attempt in range(6):
         try:
             if key:
                 base = (os.environ.get("LLM_BASE_URL") or "https://api.deepseek.com").rstrip("/")
@@ -49,9 +55,15 @@ def llm_script(topics):
             txt = out["choices"][0]["message"]["content"]
             d = json.loads(re.search(r"\{.*\}", txt, re.S).group(0))
             assert d["blocks"] and all(b["text"] for b in d["blocks"]) and len(d.get("intro", "")) > 40
-            d["blocks"] = [{"text": d["intro"], "keywords": d.get("intro_keywords") or d["blocks"][0].get("keywords", [])}] + d["blocks"]; return d
+            nw = len(d["intro"].split()) + sum(len(b["text"].split()) for b in d["blocks"])
+            d["blocks"] = [{"text": d["intro"], "keywords": d.get("intro_keywords") or d["blocks"][0].get("keywords", [])}] + d["blocks"]
+            tgt = 190 if SHORT else 700
+            if best is None or abs(nw - tgt) < best[0]: best = (abs(nw - tgt), d)
+            assert (nw <= 210) if SHORT else (350 <= nw <= 1100), f"longueur {nw} mots hors cible"
+            return d
         except Exception as e:
-            print("script retry", e, file=sys.stderr); time.sleep(46)
+            print("script retry", e, file=sys.stderr); time.sleep(8)
+    if best: return best[1]  # meilleur essai : la vidéo sort toujours
     sys.exit("script indisponible")
 
 async def say(text, path):
