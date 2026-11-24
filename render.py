@@ -202,7 +202,12 @@ def main():
                 dd = d * (len(x) + 1) / tot; w2.append((x, t0, t0 + dd)); t0 += dd
             words = w2
         else: words = [(tk, w[1], w[2]) for tk, w in zip(toks, words)]
-        gs = [words[i:i + n] for i in range(0, len(words), n)]; prev = None
+        gs, cur = [], []  # un groupe ne déborde jamais sur la phrase suivante : fin de phrase = fin du sous-titre
+        for w in words:
+            cur.append(w)
+            if len(cur) >= n or re.search(r"[.!?…:]$", w[0]): gs.append(cur); cur = []
+        if cur: gs.append(cur)
+        prev = None
         for gi, g in enumerate(gs):
             s0 = st + g[0][1]; e0 = st + gs[gi + 1][0][1] - .03 if gi + 1 < len(gs) else st + g[-1][2] + .15
             e0 = max(e0, s0 + .1)
