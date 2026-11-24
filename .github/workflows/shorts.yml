@@ -52,7 +52,7 @@ jobs:
           D=$(ls -d out/*-short 2>/dev/null | tail -1)
           [ -n "$D" ] && [ -f "$D/video.mp4" ] || { echo "pas de vidéo"; exit 0; }
           TAG="short-$(date +%Y%m%d-%H%M)"
-          gh release create "$TAG" "$D/video.mp4" "$D/cover.jpg" "$D/meta.json" --title "$TAG" --notes "Vidéo short automatique"
+          gh release create "$TAG" "$D/video.mp4" "$D/cover.jpg" "$D/meta.json" "$D/subs.srt" --title "$TAG" --notes "Vidéo short automatique"
           B="https://github.com/${{ github.repository }}/releases/download/$TAG"
           [ -n "$HOOK" ] || { echo "MAKE_WEBHOOK_URL absent : publication non envoyée"; exit 0; }
           SKIP=false; python publish.py "$D" && SKIP=true || true
