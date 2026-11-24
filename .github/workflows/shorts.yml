@@ -48,18 +48,27 @@ jobs:
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
         run: |
           D=$(ls -d out/*-short 2>/dev/null | tail -1)
           [ -n "$D" ] && [ -f "$D/video.mp4" ] || { echo "pas de vidéo"; exit 0; }
           TAG="short-$(date +%Y%m%d-%H%M)"
           gh release create "$TAG" "$D/video.mp4" "$D/cover.jpg" "$D/meta.json" "$D/subs.srt" --title "$TAG" --notes "Vidéo short automatique"
           B="https://github.com/${{ github.repository }}/releases/download/$TAG"
-          [ -n "$HOOK" ] || { echo "MAKE_WEBHOOK_URL absent : publication non envoyée"; exit 0; }
-          SKIP=false; python publish.py "$D" && SKIP=true || true
-          # Rotation : YouTube en direct (publish.py, 0 opération Make). Make publie Facebook reel + Instagram pour TOUS les Shorts
-          # (full=true) ; si YouTube direct a échoué (SKIP=false), Make le publie aussi en secours. Buffer ne fait plus que TikTok.
-          # Metricool n'est plus nécessaire (Instagram passe par Make : ig_metricool toujours false).
-          FULL=true; IGM=false
+          # Publication DIRECTE (gratuite, sans quota) : YouTube, Facebook reel, Instagram reel. Make = secours uniquement.
+          SKIP=false; python publish.py "$D" || python publish.py "$D" && SKIP=true || true
+          # Facebook limite les publications (erreur 368 "spam" le 24/11) : reel Facebook seulement 3 fois/jour (Shorts 08h, 16h, 20h) + la longue = 4 posts/jour.
+          H=$(date -u +%H); case "$H" in 06|07|14|15|18|19) FBSLOT=true;; *) FBSLOT=false;; esac
+          FBD=false; [ "$FBSLOT" = true ] && { python publish_meta.py "$D" fb "$B/video.mp4" && FBD=true || true; }
+          IGD=false; python publish_meta.py "$D" ig "$B/video.mp4" && IGD=true || true
+          [ -n "$HOOK" ] || { echo "MAKE_WEBHOOK_URL absent : secours Make non envoye"; exit 0; }
+          # Make ne publie que ce que le direct n'a pas pu faire : full=false coupe YouTube+Facebook, ig_metricool=true coupe Instagram
+          if [ "$FBSLOT" = false ]; then FBD=true; fi  # créneau sans Facebook : rien à faire côté Facebook
+          if [ "$FBD" = true ] && [ "$IGD" = true ] && [ "$SKIP" = true ]; then echo "Tout publie en direct : Make non sollicite"; exit 0; fi
+          if [ "$FBD" = true ]; then FULL=false; else FULL=true; fi
+          if [ "$IGD" = true ]; then IGM=true; else IGM=false; fi
           jq -n --argjson full "$FULL" --argjson igm "$IGM" --argjson skip "$SKIP" --arg mode "short" --arg v "$B/video.mp4" --arg c "$B/cover.jpg" \
             --arg ig "$(python igtext.py "$D")" --slurpfile m "$D/meta.json" \
             '{full:$full, ig_metricool:$igm, skip_youtube:$skip, mode:$mode, video_url:$v, cover_url:$c, title:$m[0].title, description:$m[0].description, tags:$m[0].tags, fb_text:($m[0].description[0:2000]), ig_text:$ig, pinned_comment:$m[0].pinned_comment}' \
