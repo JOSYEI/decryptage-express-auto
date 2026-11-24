@@ -273,7 +273,7 @@ def main():
     for k, (t0_, dd, x_, y_) in enumerate(cards):
         fc += f"[{5 + k}:v]format=rgba,setpts=PTS-STARTPTS+{t0_:.2f}/TB[k{k}];[cur][k{k}]overlay=x={x_}:y={y_}:eof_action=pass[cur];"
     no = 5 + len(cards)
-    fc += f"[{no}:v]format=rgba,setpts=PTS-STARTPTS+{total-1.7:.2f}/TB[ot];[cur][it]overlay=0:0:eof_action=pass[o0];[o0][ot]overlay=0:0:eof_action=pass[o1];[o1]fade=t=out:st={total-0.5:.2f}:d=0.5:color=black[o]"
+    fc += f"[{no}:v]format=rgba,setpts=PTS-STARTPTS+{total-1.7:.2f}/TB[ot];[cur][it]overlay=0:0:eof_action=pass[o0];[o0][ot]overlay=0:0:eof_action=repeat[o1];[o1]fade=t=out:st={total-0.5:.2f}:d=0.5:color=black[o]"
     card_in = "".join(f" -framerate 30 -i '{dd}/%03d.png'" for _, dd, _, _ in cards)
     sh(f"""ffmpeg -y -i '{WORK}/video.mp4' -i '{WORK}/audio.wav' -framerate 30 -i '{ov}/logo_in/%03d.png' -framerate 30 -i '{ov}/cta/%03d.png' -framerate 30 -i '{WORK}/intro/%03d.png'{card_in} -framerate 30 -i '{WORK}/outro/%03d.png' -filter_complex "{fc}" -map "[o]" -map 1:a -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -c:a aac -b:a 192k -t {total:.2f} -movflags +faststart '{OUT}/video.mp4'""")
     import seo, cover
