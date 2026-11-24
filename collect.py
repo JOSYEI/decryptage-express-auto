@@ -173,6 +173,10 @@ def main():
             "trusted_sources": best["trusted"],
             "articles": [{"title": i["title"], "source": i["source"], "link": i["link"],
                           "published": i["published"].isoformat()} for i in items[:8]]})
+        others = [x for x in scored if x["trusted"] >= MIN_TRUSTED and x["score"] >= MIN_SCORE][: (6 if MODE == "short" else 10)]
+        result["topics"] = [{"title": sorted(o["cluster"]["items"], key=lambda i: i["age_h"])[0]["title"],
+                             "articles": [{"title": i["title"], "source": i["source"], "link": i["link"], "published": i["published"].isoformat()}
+                                          for i in sorted(o["cluster"]["items"], key=lambda i: i["age_h"])[:6]]} for o in others]
         hist.append({"date": result["date"], "title": items[0]["title"],
                      "tokens": sorted(best["cluster"]["tok"])})
         json.dump(hist[-200:], open(os.path.join(HERE, "history.json"), "w", encoding="utf-8"),

@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+"""Décryptage Express - rendu cloud (recette v6 validée).
+Entrée : topic.json (collect.py). MODE=short (9:16) ou long (16:9). Sortie : out/<date>-<mode>/video.mp4 + meta.json.
+Sans clé : script via Pollinations (gratuit), voix edge-tts, clips Mixkit (registre used_clips.json, jamais réutilisés)."""
+import asyncio, time, glob, json, os, random, re, subprocess, sys, urllib.request, datetime as dt
+_ca = os.path.expanduser("~/.ccr/ca-bundle.crt")
+if os.path.exists(_ca):  # uniquement dans le bac à sable de test
+    import certifi; certifi.where = lambda: _ca
+HERE = os.path.dirname(os.path.abspath(__file__))
+MODE = os.environ.get("MODE", "short"); SHORT = MODE == "short"
+W, H = (1080, 1920) if SHORT else (1920, 1080)
+VOICE = "fr-FR-RemyMultilingualNeural"
+STAMP = dt.datetime.now().strftime("%Y-%m-%d-%H%M")
+OUT = os.path.join(HERE, "out", f"{STAMP}-{MODE}"); os.makedirs(OUT, exist_ok=True)
+WORK = os.path.join(OUT, "w"); os.makedirs(WORK, exist_ok=True)
+UA = {"User-Agent": "Mozilla/5.0"}
+def sh(c): subprocess.run(c, shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+def dur(f): return float(subprocess.check_output(f"ffprobe -v error -show_entries format=duration -of csv=p=0 '{f}'", shell=True))
+def get(url, data=None, headers=None, t=120):
+    return urllib.request.urlopen(urllib.request.Request(url, data=data, headers=headers or UA), timeout=t).read()
+
+PROMPT = """Tu écris pour « Décryptage Express », média français sur l'IA. Voix off sans visage, texte écrit comme un grand média :
+phrases longues et liées, connecteurs, aucun mot-étiquette (« verdict », « premier signal »), chiffres écrits en chiffres, tutoiement léger.
+Commence DIRECTEMENT par l'accroche la plus forte, sans « bonjour », sans « et si ». N'utilise QUE les faits fournis, n'invente rien,
+cite la source à voix haute. Les sujets s'enchaînent comme un seul récit, sans « affaire à suivre ». %s
+Réponds UNIQUEMENT en JSON : {"title":"titre viral à mots-clés, max 95 caractères","description":"2 phrases","hashtags":["#..."],
+"blocks":[{"text":"narration","keywords":["3 mots-clés de recherche vidéo EN ANGLAIS, ex: server room"]}]}"""
+FORMAT = ("FORMAT SHORT : 4 à 6 blocs, 12 à 17 secondes de voix par sujet (30 à 45 mots), 55 à 65 secondes au total, dernier bloc : « Abonne-toi pour ne rien perdre des décryptages »."
+          if SHORT else "FORMAT LONG : 9 à 12 blocs de 45 à 70 mots, un changement de sujet toutes les 1 à 2 minutes, dernier bloc : « Abonne-toi pour la prochaine vidéo, à bientôt »."
+)
+
+def llm_script(topics):
+    facts = "\n".join(f"SUJET {i+1} : {t['title']}\n" + "\n".join(f"- {a['title']} ({a['source']})" for a in t['articles'][:4]) for i, t in enumerate(topics))
+    msgs = [{"role": "system", "content": PROMPT % FORMAT}, {"role": "user", "content": facts}]
+    key = os.environ.get("LLM_API_KEY")
+    for attempt in range(4):
+        try:
+            if key:
+                base = (os.environ.get("LLM_BASE_URL") or "https://api.deepseek.com").rstrip("/")
+                body = json.dumps({"model": os.environ.get("LLM_MODEL") or "deepseek-chat", "messages": msgs, "temperature": 0.5}).encode()
+                out = json.loads(get(base + "/chat/completions", body, {"Content-Type": "application/json", "Authorization": "Bearer " + key}, 180))
+            else:  # gratuit, sans clé
+                body = json.dumps({"model": "openai-fast", "messages": msgs, "temperature": 0.5, "seed": random.randint(1, 10**6)}).encode()
+                out = json.loads(get("https://text.pollinations.ai/openai", body, {"Content-Type": "application/json", **UA}, 180))
+            txt = out["choices"][0]["message"]["content"]
+            d = json.loads(re.search(r"\{.*\}", txt, re.S).group(0))
+            assert d["blocks"] and all(b["text"] for b in d["blocks"]); return d
+        except Exception as e:
+            print("script retry", e, file=sys.stderr); time.sleep(46)
+    sys.exit("script indisponible")
+
+async def say(text, path):
+    import edge_tts
+    c = edge_tts.Communicate(text, VOICE, rate="+7%", boundary="WordBoundary"); words = []
+    with open(path, "wb") as f:
+        async for ch in c.stream():
+            if ch["type"] == "audio": f.write(ch["data"])
+            elif ch["type"] == "WordBoundary": words.append((ch["text"], ch["offset"] / 1e7, (ch["offset"] + ch["duration"]) / 1e7))
+    cuts = [(words[i][2] + .05, words[i + 1][1] - .05) for i in range(len(words) - 1) if words[i + 1][1] - words[i][2] > .18]
+    if cuts:  # silences raccourcis à 0,10 s (recette v6)
+        segs, pos = [], 0.0
+        for a, b in cuts: segs.append((pos, a)); pos = b
+        segs.append((pos, None))
+        fl = ";".join(f"[0:a]atrim=start={a:.3f}" + (f":end={b:.3f}" if b else "") + f",asetpts=PTS-STARTPTS[s{i}]" for i, (a, b) in enumerate(segs))
+        fl += ";" + "".join(f"[s{i}]" for i in range(len(segs))) + f"concat=n={len(segs)}:v=0:a=1[o]"
+        sh(f"ffmpeg -y -i '{path}' -filter_complex \"{fl}\" -map [o] '{path}.t.mp3'"); os.replace(path + ".t.mp3", path)
+        words = [(w, s - sum(b - a for a, b in cuts if b <= s + 1e-6), e - sum(b - a for a, b in cuts if b <= s + 1e-6)) for w, s, e in words]
+    return words
+
+REG = os.path.join(HERE, "used_clips.json")
+used = set(json.load(open(REG))) if os.path.exists(REG) else set()
+def find_clips(kws, need):
+    ids = []
+    for kw in kws + ["technology", "data-center", "city", "computer-chip"]:
+        slug = re.sub(r"[^a-z0-9]+", "-", kw.lower()).strip("-")
+        try: html = get(f"https://mixkit.co/free-stock-video/{slug}/").decode("utf8", "ignore")
+        except Exception: continue
+        for i in re.findall(r"assets\.mixkit\.co/videos/(\d+)/", html):
+            if i not in used and i not in ids: ids.append(i)
+        if len(ids) >= need: break
+    got = []
+    for i in ids:
+        f = os.path.join(WORK, f"c{i}.mp4")
+        try: open(f, "wb").write(get(f"https://assets.mixkit.co/videos/{i}/{i}-720.mp4", t=90)); got.append(f); used.add(i)
+        except Exception: continue
+        if len(got) >= need: break
+    return got
+
+def main():
+    topic = json.load(open(os.path.join(HERE, "topic.json")))
+    topics = topic.get("topics") or ([topic["topic"]] if topic.get("topic") else [])
+    if topic.get("status") != "ok" or not topics: print("pas de sujet :", topic.get("reason")); return
+    script = llm_script(topics[:6 if SHORT else 10]); blocks = script["blocks"]
+    voices = []
+    for i, b in enumerate(blocks):
+        p = os.path.join(WORK, f"v{i}.mp3"); words = asyncio.run(say(b["text"], p)); voices.append((p, words, dur(p)))
+    GAP, LEAD = .14, 3.0 if SHORT else 5.0
+    starts, t = [], LEAD
+    for p, w, d in voices: starts.append(t); t += d + GAP
+    total = t + 1.0
+    # --- vidéo : plans de ~1,8 s (Short) / ~5 s (long), zoom lent, flash blanc au début de chaque sujet
+    seg_len = 1.8 if SHORT else 5.0; nseg = int(total / seg_len) + 1
+    clips = find_clips(sum([b.get("keywords", []) for b in blocks], []), nseg)
+    if not clips: sys.exit("aucun clip")
+    segs = []; cur = 0.0
+    for k in range(nseg):
+        sd = min(seg_len, total - cur)
+        if sd <= 0.05: break
+        c = clips[k % len(clips)]; o = os.path.join(WORK, f"s{k:03d}.mp4"); fr = int(sd * 30) + 1
+        z = f"zoompan=z='1.0+0.07*on/{fr}+0.10*exp(-on/6)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s={W}x{H}:fps=30"
+        vf = f"fps=30,scale={int(W*1.25)}:{int(H*1.25)}:force_original_aspect_ratio=increase,crop={int(W*1.25)}:{int(H*1.25)},{z},eq=contrast=1.1:saturation=1.08:brightness=-0.03,vignette=PI/5"
+        if any(abs(cur - s) < .01 or (cur <= s < cur + sd) for s in starts): vf += ",fade=t=in:st=0:d=0.14:color=white"
+        sh(f"ffmpeg -y -stream_loop -1 -ss {0.3 + (k // len(clips)) * 4.2:.2f} -t {sd + .2:.2f} -i '{c}' -vf \"{vf}\" -t {sd:.3f} -r 30 -pix_fmt yuv420p -c:v libx264 -preset veryfast -crf 21 '{o}'")
+        segs.append(o); cur += sd
+    open(os.path.join(WORK, "list.txt"), "w").write("\n".join(f"file '{os.path.basename(s)}'" for s in segs))
+    sh(f"ffmpeg -y -f concat -safe 0 -i '{WORK}/list.txt' -c copy '{WORK}/video.mp4'")
+    # --- sous-titres : 2 mots (Short) / 3 mots (long), mot-clé en jaune, jamais superposés
+    ts = lambda x: f"{int(x//3600)}:{int(x%3600//60):02d}:{x%60:05.2f}"
+    n = 2 if SHORT else 3; fs = 120 if SHORT else 92
+    head = f"[Script Info]\nScriptType: v4.00+\nPlayResX: {W}\nPlayResY: {H}\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,OutlineColour,BackColour,Bold,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV\nStyle: D,Roboto,{fs},&H00FFFFFF,&H00000000,&H80000000,1,1,8,3,5 if False else 2,80,80,{int(H*0.38) if SHORT else 120}\n[Events]\nFormat: Layer,Start,End,Style,Text"
+    head = head.replace("5 if False else 2", "2")
+    stop = set("le la les un une des de du et en au aux à a ce ces sur pour par avec dans qui que est sont il elle the of to in".split())
+    ev = []
+    for (p, words, d), st in zip(voices, starts):
+        gs = [words[i:i + n] for i in range(0, len(words), n)]
+        for gi, g in enumerate(gs):
+            s = st + g[0][1]; e = st + gs[gi + 1][0][1] - .03 if gi + 1 < len(gs) else st + g[-1][2] + .15
+            txt = " ".join(("{\\c&H00D7FF&}" + w[0].upper() + "{\\c&HFFFFFF&}") if (len(w[0]) > 6 and w[0].lower() not in stop and (gi + words.index(w)) % 3 == 0) else w[0].upper() for w in g)
+            ev.append(f"Dialogue: 0,{ts(s)},{ts(max(e, s + .1))},D,{{\\fscx85\\fscy85\\t(0,110,\\fscx105\\fscy105)\\t(110,190,\\fscx100\\fscy100)}}{txt}")
+    open(os.path.join(WORK, "cap.ass"), "w", encoding="utf8").write(head + "\n" + "\n".join(ev))
+    # --- audio : voix + musique cinématique basse (sidechain) + whoosh très discrets, loudnorm
+    ins = " ".join(f"-i '{p}'" for p, _, _ in voices)
+    fl = "".join(f"[{i}:a]adelay={int(s*1000)}|{int(s*1000)},volume=1.3[a{i}];" for i, s in enumerate(starts))
+    fl += "".join(f"[a{i}]" for i in range(len(voices))) + f"amix=inputs={len(voices)}:normalize=0,apad,atrim=0:{total:.2f}[v]"
+    sh(f"ffmpeg -y {ins} -filter_complex \"{fl}\" -map [v] -ar 44100 '{WORK}/voice.wav'")
+    mus = random.choice(glob.glob(os.path.join(HERE, "assets", "music", "*.mp3")))
+    sw = ";".join(f"anoisesrc=d=0.5:c=pink:a=0.5,highpass=f=500,lowpass=f=5500,afade=t=out:d=0.4,volume=0.07,adelay={int(max(s-.3,0)*1000)}|{int(max(s-.3,0)*1000)}[w{i}]" for i, s in enumerate(starts))
+    sh(f"ffmpeg -y -filter_complex \"{sw};{''.join(f'[w{i}]' for i in range(len(starts)))}amix=inputs={len(starts)}:normalize=0[o]\" -map [o] -t {total:.2f} -ar 44100 '{WORK}/sfx.wav'")
+    sh(f"""ffmpeg -y -i '{WORK}/voice.wav' -i '{WORK}/sfx.wav' -stream_loop -1 -i '{mus}' -filter_complex "[0:a]asplit=2[k][v1];[2:a]atrim=0:{total:.2f},volume=0.13,afade=t=in:d=2,afade=t=out:st={total-3:.2f}:d=3[m];[m][k]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=500[md];[md][v1][1:a]amix=inputs=3:normalize=0:duration=longest[mx];[mx]loudnorm=I=-14:TP=-1.5:LRA=11[o]" -map "[o]" -t {total:.2f} -ar 44100 '{WORK}/audio.wav'""")
+    sh(f"""ffmpeg -y -i '{WORK}/video.mp4' -i '{WORK}/audio.wav' -vf "ass='{WORK}/cap.ass'" -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -c:a aac -b:a 192k -t {total:.2f} -movflags +faststart '{OUT}/video.mp4'""")
+    json.dump({"title": script["title"][:100], "description": script["description"], "hashtags": script["hashtags"], "mode": MODE,
+               "duration": round(total, 1), "topics": [t["title"] for t in topics]}, open(os.path.join(OUT, "meta.json"), "w"), ensure_ascii=False, indent=2)
+    json.dump(sorted(used), open(REG, "w"))
+    print("OK", OUT, round(total, 1), "s")
+main()

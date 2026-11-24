@@ -14,23 +14,29 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
-      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-roboto
       - run: pip install pillow edge-tts numpy
       - name: Collecte (actu des 24 dernières heures)
         env: { MODE: long }
         run: python collect.py
-      - name: Production
+      - name: Montage (recette v6)
         env:
           MODE: long
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
           LLM_MODEL: ${{ vars.LLM_MODEL }}
-          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
-          OUT_DIR: out
-        run: python produce.py
+        run: python render.py
+      - name: Conserver la vidéo du jour
+        uses: actions/upload-artifact@v4
+        with:
+          name: video-long-${{ github.run_number }}
+          path: |
+            out/*/video.mp4
+            out/*/meta.json
+          retention-days: 7
       - name: Journal
         run: |
           git config user.name "de-auto"; git config user.email "de-auto@users.noreply.github.com"
-          git add history.json log.csv topic.json 2>/dev/null || true
+          git add history.json log.csv topic.json used_clips.json 2>/dev/null || true
           git commit -m "Journal vidéo longue" || true
           git push || true
