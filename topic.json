@@ -3,110 +3,38 @@
   "status": "ok",
   "reason": "",
   "topic": {
-    "title": "C dans l’air du mardi 24 novembre 2026 : le retour de Jensen Huang chez Nvidia fait polémique",
-    "score": 75.2,
-    "trusted_sources": 2,
+    "title": "En Norvège, 3 500 robots équipés d'IA et de lasers traquent les parasites des saumons dans les fermes aquacoles",
+    "score": 68.3,
+    "trusted_sources": 1,
     "articles": [
       {
-        "title": "C dans l’air du mardi 24 novembre 2026 : le retour de Jensen Huang chez Nvidia fait polémique",
-        "source": "TV-Programme.com",
-        "link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOVlhiS0JDYWhhOEpTTlhJRDR2ZFdaQ3JOZW5VX3g1Qk93NFpucmFFUDluNm9yangxWk9sZ3J1RXhHc1d2ZFozbjkwdUJGWXg3dnl5bWNNOFNHcGdxbFRSUEpfQlNMNDBHMWhZQkg1bGhKYWUxRmRFeGxFOGN6M2FBZUpSY1JCNWJvYS1VbklyWjI1MnRUNUNmaWRmczhwbmVyZXhqMHZEeS1mZGFEeUl2blowUktxdGtJb3dyeGtfWk9RTUphVG1R?oc=5",
-        "published": "2026-11-24T14:44:46+00:00"
-      },
-      {
-        "title": "Les actions Nvidia chutent de 6% après le retour de Huang",
-        "source": "Investing.com France",
-        "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNR0Q2WEdpVVRiN3gtLUVwWmd4Q19EdG1rUGU5TTliZDJIQ0JCdzBvVEJIRXZSeTBJRjh5UDhoYWhORFYybndnWDVIQ1UtS21MaUdHQmwzNkJvak9qTzlWczcyZXA5S0lyNWJmMTZ5NzhpQzUxQWRmOVFiTW92b2RKbkRUUEZ2dEplYXo5VTBHWGptT2tUTkIza2JxRWNRNTRFcVdsdVRUVHdxRVJFcS10UHBn?oc=5",
-        "published": "2026-11-24T14:39:00+00:00"
-      },
-      {
-        "title": "Pressions de Trump et de la Silicon Valley pour le retour de Jensen Huang chez Nvidia",
-        "source": "Euronews.com",
-        "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPbXB3UXlveENJdmRrRWE1dzBtaUxFRFEybXVrbTlVX1dhdFNlOE1KZ1NHem0xWkRBYUtubzhaYkl0Qm9WZENUM3lOd19rRzJVUnJCOW1RdG9UNWVEVFpsN3M3bU1LYTVRNmxPci1IMl9OY0c5djR3Ujd3RzZIWVVFeHFQaGZqOXNCZURyaUxWWVB3ak5EUzg5SXJtTXMwUmNhVUtEd1ZVNVY2OHRONWZaLUxVRUNGYzVreWprVQ?oc=5",
-        "published": "2026-11-24T14:31:43+00:00"
-      },
-      {
-        "title": "Le fil info matin du Mardi 24 novembre 2026",
-        "source": "franceinfo",
-        "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNWHQwSjR5TkY4dWVIck1HUEpxb21sazRjOUJ0YVVidEN1MHFCdVM0ZnZKdkpsMXVhWDlyeDZocjhZUHdaQnAtX00tN1hGNExjVHVPRWl0UjFEQnZHY25leVhNQkRFdXRsdGgzdkx0YXhjdlFmX1NSd2pmcFFLVjJKWC1oWTEyaVdIWVF6Zm91d01wTkZRN0xBRzJ1S1F6a3dGS2FSVWRfRG5TeXlhcXNIeDAyYXU3UQ?oc=5",
-        "published": "2026-11-24T14:28:04+00:00"
-      },
-      {
-        "title": "Taïwan célèbre le retour de son héros Jensen Huang à la tête de Nvidia",
-        "source": "Zonebourse Suisse",
-        "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxPTWtYbDVPX3NQc19Kd2hOZE5nTVhRZHAyQ1hBY2gzSTNCTWdYcDNxdF9rem00LVl5S1E3cHdTRGJnTFpqOGhKMW5RZncxdkd0MVZQdUVWODA5blJtRkd0NDR3R19NX3BfTE5hWUpxNll6RkdscGF5b0RZWjNyaGJ0dk9JZGY0bElnLXVqRnVDSHVqNEF5N1JSTXRlNm1LcTFveTVvX0ZMTmZzaXBZTmpDZDg3MnVNclF0NDk5OW5kdFZvYWFFMmp2M2NB?oc=5",
-        "published": "2026-11-24T14:27:17+00:00"
-      },
-      {
-        "title": "Le retour de Jensen Huang à la tête de Nvidia en tant que PDG marque une nouvelle réalité",
-        "source": "Zonebourse Suisse",
-        "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxPOVkxdXZGQTk3VEZqR3VtUVdaMnFKSjFiSE9LX0d2VGpNTUJMbnJVQVlNbW5SUGxXcXo4Sjd2UzhhU1JGbHhxWmo2bVJ6QTZBaDJsNURDSHNweGxKSU9UeWFObVJuV3czSHp5ZEszNTU5QUVWbGxBYXlUWmMxenNMYTU2UGdMTEN3c1RTcFNVdW45bXVZeHoxTEg3dnN0UnJRSDVrY0hab3JKTUE5UGsyaEEyUjkwWV9qZHlDN0FpcDFSOE5rbFNDYVV4bUY2SDdUX21NcmtGSFFrR1B1OV9aRUhZTQ?oc=5",
-        "published": "2026-11-24T14:23:35+00:00"
-      },
-      {
-        "title": "Retour de Jensen Huang à la tête de Nvidia : les avoirs de Donald Trump auraient gagné jusqu'à 15 millions de dollars",
-        "source": "RTL",
-        "link": "https://news.google.com/rss/articles/CBMi9wFBVV95cUxOc3g5Xy05QmFHYzZDRmpEeG1lZ1Q0aE1qVEpJRGljOHo4LXhjWXVUc1VveVRidTJnWXltaUhRT1JPSXZ5eV9VbTJhUG5Zc0FzbHFiNE15OG5FdnpRTkNBazhwZ1gzbWUxNEwxRmdiY1JVUjJpaGVOSzVyYnM0Z2NlTHk2Q0g2QmxkUXdnNlBwT3I0dDB4TmhtLVdOZGdaaE1obTV4cHlYTlVLS2t0WmFBMVp6bHhlUk5wTGNDRWU4RWo2U1dzQ19tQzB5U09uT19Wb3Fxd18tSXRxSHdsbVZTWGZXMTVYVEJPdE5NRk04QkRBaGdwaGlN?oc=5",
-        "published": "2026-11-24T14:20:57+00:00"
-      },
-      {
-        "title": "Le retour fracassant de Jensen Huang à la tête de Nvidia entraîne un rebond spectaculaire de l'action",
-        "source": "franceinfo",
-        "link": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxQQURGTk45V2J5UndsQjlzRURfUkdkdEk0cWU2bmNqZTNaNWllbFJBUkY4WndkR0h5VzAwTHBlMFpmQVk0c09pTUt6Z2R6b1NPOUFXWmUyR3d1bU9xcmtSNjRsYzRwSWlZal92SkhodU0tQWtUWnR2dThDLXhPeGxZWl82QlMxcE5HR0lRckNSemgtWEdlYjdPN0FlMU5aS3NmQ2tseEp6NnQ3UGllNTE5aWhfRmtoMklnbGNWaUZJMmdSRXplWEhXb280ODl5QXpGdVVsLWlPMUtOX0RSWjM3NXI3MTA?oc=5",
-        "published": "2026-11-24T14:05:10+00:00"
+        "title": "En Norvège, 3 500 robots équipés d'IA et de lasers traquent les parasites des saumons dans les fermes aquacoles",
+        "source": "Science et vie",
+        "link": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxPX0ZYTFlZVmdwLTVYdjFhZG1KMVJGbjRsRlZZcGstR1N6VG9BdV9ZMmxTbDFSYjlDaTZaSmhicUdjaE4zeFRBSVFaMGRuZVhpT1IyaEs5TzdhVHpiWjlXbVMyYUl3dGRseVduOGRTbjB2UURyV3k0ejZkU095TkIyRUFYMXZjLTBPRGNKSDBPZGxfVG8zM2p2UTdtcjJlUW5BNXpCUF9ZVEZzTXFGQmQ5dEVtZW8tbDUyb2VuTldmZ3FEd3Fremw0NE5BQWJ1SWlrZ0NJN1JtVkFSSjRCVEc0aXpkWXByS0FwVjNuMlRHU0QxNmZ5OVNtSDZGbTFNQQ?oc=5",
+        "published": "2026-11-24T18:00:19+00:00"
       }
     ]
   },
   "topics": [
     {
-      "title": "C dans l’air du mardi 24 novembre 2026 : le retour de Jensen Huang chez Nvidia fait polémique",
+      "title": "En Norvège, 3 500 robots équipés d'IA et de lasers traquent les parasites des saumons dans les fermes aquacoles",
       "articles": [
         {
-          "title": "C dans l’air du mardi 24 novembre 2026 : le retour de Jensen Huang chez Nvidia fait polémique",
-          "source": "TV-Programme.com",
-          "link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOVlhiS0JDYWhhOEpTTlhJRDR2ZFdaQ3JOZW5VX3g1Qk93NFpucmFFUDluNm9yangxWk9sZ3J1RXhHc1d2ZFozbjkwdUJGWXg3dnl5bWNNOFNHcGdxbFRSUEpfQlNMNDBHMWhZQkg1bGhKYWUxRmRFeGxFOGN6M2FBZUpSY1JCNWJvYS1VbklyWjI1MnRUNUNmaWRmczhwbmVyZXhqMHZEeS1mZGFEeUl2blowUktxdGtJb3dyeGtfWk9RTUphVG1R?oc=5",
-          "published": "2026-11-24T14:44:46+00:00"
-        },
-        {
-          "title": "Les actions Nvidia chutent de 6% après le retour de Huang",
-          "source": "Investing.com France",
-          "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNR0Q2WEdpVVRiN3gtLUVwWmd4Q19EdG1rUGU5TTliZDJIQ0JCdzBvVEJIRXZSeTBJRjh5UDhoYWhORFYybndnWDVIQ1UtS21MaUdHQmwzNkJvak9qTzlWczcyZXA5S0lyNWJmMTZ5NzhpQzUxQWRmOVFiTW92b2RKbkRUUEZ2dEplYXo5VTBHWGptT2tUTkIza2JxRWNRNTRFcVdsdVRUVHdxRVJFcS10UHBn?oc=5",
-          "published": "2026-11-24T14:39:00+00:00"
-        },
-        {
-          "title": "Pressions de Trump et de la Silicon Valley pour le retour de Jensen Huang chez Nvidia",
-          "source": "Euronews.com",
-          "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPbXB3UXlveENJdmRrRWE1dzBtaUxFRFEybXVrbTlVX1dhdFNlOE1KZ1NHem0xWkRBYUtubzhaYkl0Qm9WZENUM3lOd19rRzJVUnJCOW1RdG9UNWVEVFpsN3M3bU1LYTVRNmxPci1IMl9OY0c5djR3Ujd3RzZIWVVFeHFQaGZqOXNCZURyaUxWWVB3ak5EUzg5SXJtTXMwUmNhVUtEd1ZVNVY2OHRONWZaLUxVRUNGYzVreWprVQ?oc=5",
-          "published": "2026-11-24T14:31:43+00:00"
-        },
-        {
-          "title": "Le fil info matin du Mardi 24 novembre 2026",
-          "source": "franceinfo",
-          "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNWHQwSjR5TkY4dWVIck1HUEpxb21sazRjOUJ0YVVidEN1MHFCdVM0ZnZKdkpsMXVhWDlyeDZocjhZUHdaQnAtX00tN1hGNExjVHVPRWl0UjFEQnZHY25leVhNQkRFdXRsdGgzdkx0YXhjdlFmX1NSd2pmcFFLVjJKWC1oWTEyaVdIWVF6Zm91d01wTkZRN0xBRzJ1S1F6a3dGS2FSVWRfRG5TeXlhcXNIeDAyYXU3UQ?oc=5",
-          "published": "2026-11-24T14:28:04+00:00"
-        },
-        {
-          "title": "Taïwan célèbre le retour de son héros Jensen Huang à la tête de Nvidia",
-          "source": "Zonebourse Suisse",
-          "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxPTWtYbDVPX3NQc19Kd2hOZE5nTVhRZHAyQ1hBY2gzSTNCTWdYcDNxdF9rem00LVl5S1E3cHdTRGJnTFpqOGhKMW5RZncxdkd0MVZQdUVWODA5blJtRkd0NDR3R19NX3BfTE5hWUpxNll6RkdscGF5b0RZWjNyaGJ0dk9JZGY0bElnLXVqRnVDSHVqNEF5N1JSTXRlNm1LcTFveTVvX0ZMTmZzaXBZTmpDZDg3MnVNclF0NDk5OW5kdFZvYWFFMmp2M2NB?oc=5",
-          "published": "2026-11-24T14:27:17+00:00"
-        },
-        {
-          "title": "Le retour de Jensen Huang à la tête de Nvidia en tant que PDG marque une nouvelle réalité",
-          "source": "Zonebourse Suisse",
-          "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxPOVkxdXZGQTk3VEZqR3VtUVdaMnFKSjFiSE9LX0d2VGpNTUJMbnJVQVlNbW5SUGxXcXo4Sjd2UzhhU1JGbHhxWmo2bVJ6QTZBaDJsNURDSHNweGxKSU9UeWFObVJuV3czSHp5ZEszNTU5QUVWbGxBYXlUWmMxenNMYTU2UGdMTEN3c1RTcFNVdW45bXVZeHoxTEg3dnN0UnJRSDVrY0hab3JKTUE5UGsyaEEyUjkwWV9qZHlDN0FpcDFSOE5rbFNDYVV4bUY2SDdUX21NcmtGSFFrR1B1OV9aRUhZTQ?oc=5",
-          "published": "2026-11-24T14:23:35+00:00"
+          "title": "En Norvège, 3 500 robots équipés d'IA et de lasers traquent les parasites des saumons dans les fermes aquacoles",
+          "source": "Science et vie",
+          "link": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxPX0ZYTFlZVmdwLTVYdjFhZG1KMVJGbjRsRlZZcGstR1N6VG9BdV9ZMmxTbDFSYjlDaTZaSmhicUdjaE4zeFRBSVFaMGRuZVhpT1IyaEs5TzdhVHpiWjlXbVMyYUl3dGRseVduOGRTbjB2UURyV3k0ejZkU095TkIyRUFYMXZjLTBPRGNKSDBPZGxfVG8zM2p2UTdtcjJlUW5BNXpCUF9ZVEZzTXFGQmQ5dEVtZW8tbDUyb2VuTldmZ3FEd3Fremw0NE5BQWJ1SWlrZ0NJN1JtVkFSSjRCVEc0aXpkWXByS0FwVjNuMlRHU0QxNmZ5OVNtSDZGbTFNQQ?oc=5",
+          "published": "2026-11-24T18:00:19+00:00"
         }
       ]
     },
     {
-      "title": "Ce Nvidia RTX Spark est le seul PC Windows à tenir tête au MacBook Pro M5 Pro, et il est en promo",
+      "title": "\"Ma mère s'est fait rouler…\" 1 440 € le ramonage : ces artisans ont-ils truqué des photos à l'IA pour l'arnaquer ?",
       "articles": [
         {
-          "title": "Ce Nvidia RTX Spark est le seul PC Windows à tenir tête au MacBook Pro M5 Pro, et il est en promo",
-          "source": "Frandroid",
-          "link": "https://news.google.com/rss/articles/CBMiggJBVV95cUxNX2lXbHZXWV9BY2wzclFCSDVFZGhEM05sbkZlYlo3NHZCT0diV0dzVzZOOHVTSk9abnVyRVQ5eTZidGViMW1iVjBJTkY5ckFucGVBem91WEtybmQweTJIVTRlYk9HNktHZThtVzlLVDgwSUdrcFZQYzhnWk5FMlc2YWJHQXk2U3FadklwVXFYZERmcVdzbFBSLUNjUldnQWxqT2RNaXlzT2s2M21PNnZCc2ZFNkpQMk50emJiTkdHaW5PbEJTWFBJNDAxZF9ReFM5S3hVenFLeEVnTmhJMDFWTE9TbnE3QldzZFYzc2xJZ2F0ejhvTzlzWXFfejh6RWRhYXc?oc=5",
-          "published": "2026-11-24T14:26:59+00:00"
+          "title": "\"Ma mère s'est fait rouler…\" 1 440 € le ramonage : ces artisans ont-ils truqué des photos à l'IA pour l'arnaquer ?",
+          "source": "Actu.fr",
+          "link": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxObVdfc1JQRFVfVjQzOHdMa1FrcXdqcEUxalVlaFV5SWw3SGVnYzVmblIwcHJSZ1lGWUd0d2NZTTlZbi1GWWlUNzZwQmV0QjA5TTFZSWtzei15ZjFabVNReGNRbG84TFN2MG90RTFVbEZYYzUwMUpwRE5pTzJTMVEwb19laUxzczFDU0tXNUlvMmNEUGxpaC1hQW42b1JldTRuS0dZTXJEeV8welE4NGd0N0FodlpHdW9kdWU2LTdJYlVRMXVnUFhnclZ4NHRKSTVsWTBYNEhEN1c4YmotY1Zkc0ltQ1FTQ1U0TVF3MjFn?oc=5",
+          "published": "2026-11-24T18:05:03+00:00"
         }
       ]
     }
