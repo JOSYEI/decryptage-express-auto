@@ -41,11 +41,11 @@ def make(path, total, seed=None):
         add(kick * np.exp(-t / .12) * .9, t0)
         if k % 4 in (1, 3):
             L2 = int(.2 * SR); tt = np.arange(L2) / SR
-            clap = np.random.default_rng(k).standard_normal(L2) * np.exp(-tt / .05) * .28
+            clap = np.sin(2 * np.pi * np.cumsum(190 + 220 * np.exp(-tt * 40)) / SR) * np.exp(-tt / .06) * .3  # frappe tonale, sans bruit
             add(clap, t0)
         for off in (.5,):
             L3 = int(.06 * SR); tt = np.arange(L3) / SR
-            hat = np.diff(np.random.default_rng(k + 99).standard_normal(L3 + 1)) * np.exp(-tt / .015) * .2
+            hat = np.sin(2 * np.pi * 3300 * tt) * np.exp(-tt / .012) * .07  # tic tonal, sans bruit
             add(hat, t0 + off * beat)
         r, ch = prog[bar % 4]
         for s in range(2):  # basse pulsée en croches
@@ -54,8 +54,7 @@ def make(path, total, seed=None):
             add(bass * np.minimum(tb / .01, 1) * np.exp(-tb / .3) * .5, t0 + s * beat / 2)
     # riser sur 2 mesures avant le début des drums
     Lr = int(2 * 4 * beat * SR); tr = np.arange(Lr) / SR
-    ris = np.random.default_rng(1).standard_normal(Lr) * (tr / tr[-1]) ** 2 * .05
-    add(ris, 0)
+    
     out = out[:n] * np.minimum(t_all / .5, 1)
     out = np.tanh(out * 1.6) / np.tanh(1.6); out /= max(abs(out).max(), 1e-6)
     pcm = (out * 0.9 * 32767).astype(np.int16)
