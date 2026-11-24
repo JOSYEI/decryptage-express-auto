@@ -280,7 +280,7 @@ def main():
     sh(f"""ffmpeg -y -i '{WORK}/video.mp4' -i '{WORK}/audio.wav' -framerate 30 -i '{ov}/logo_in/%03d.png' -framerate 30 -i '{ov}/cta/%03d.png' -framerate 30 -i '{WORK}/intro/%03d.png'{card_in} -framerate 30 -i '{WORK}/outro/%03d.png' -filter_complex "{fc}" -map "[o]" -map 1:a -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -c:a aac -b:a 192k -t {total:.2f} -movflags +faststart '{OUT}/video.mp4'""")
     import seo, cover
     S = seo.build(script, topics, MODE, [b["text"] for b in blocks])
-    cover.make(f"{WORK}/video.mp4", script["title"], "ACTU IA" if SHORT else "DÉCRYPTAGE IA", f"{OUT}/cover.jpg", SHORT)
+    cover.make(f"{WORK}/video.mp4", script.get("cover_title", script["title"]), "ACTU IA" if SHORT else "DÉCRYPTAGE IA", f"{OUT}/cover.jpg", SHORT)
     if SHORT:  # la couverture charte devient la toute première image : TikTok/Instagram/YouTube la prennent comme vignette automatique
         try:
             sh(f"ffmpeg -y -i '{OUT}/video.mp4' -i '{OUT}/cover.jpg' -filter_complex \"[1:v]scale=1080:1920,format=yuv420p[c];[0:v][c]overlay=0:0:enable='lt(n,3)'[o]\" -map [o] -map 0:a -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -c:a copy -movflags +faststart '{OUT}/v2.mp4' && mv '{OUT}/v2.mp4' '{OUT}/video.mp4'")
