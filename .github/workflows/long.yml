@@ -49,6 +49,8 @@ jobs:
           gh release create "$TAG" "$D/video.mp4" "$D/cover.jpg" "$D/meta.json" --title "$TAG" --notes "Vidéo long automatique"
           B="https://github.com/${{ github.repository }}/releases/download/$TAG"
           [ -n "$HOOK" ] || { echo "MAKE_WEBHOOK_URL absent : publication non envoyée"; exit 0; }
+          # Rotation fixe : la vidéo longue est publiée par Buffer (Facebook + YouTube), pas par Make
+          echo "Longue : publication confiée à Buffer (tâche planifiée 10h30)"; exit 0
           SKIP=false; python publish.py "$D" && SKIP=true || true
           jq -n --argjson skip "$SKIP" --arg mode "long" --arg v "$B/video.mp4" --arg c "$B/cover.jpg" \
             --arg ig "$(python igtext.py "$D")" --slurpfile m "$D/meta.json" \
