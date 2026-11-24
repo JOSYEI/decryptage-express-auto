@@ -1,6 +1,10 @@
 name: Vidéo de présentation de la chaîne
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: short ou long
+        default: short
 permissions:
   contents: write
 jobs:
@@ -14,10 +18,10 @@ jobs:
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-roboto
       - run: pip install pillow edge-tts numpy
       - name: Montage
-        env: { MODE: short, PRESENTATION: "1" }
+        env: { MODE: "${{ inputs.mode }}", PRESENTATION: "1" }
         run: python render.py
       - name: Release
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
-          D=$(ls -d out/*-short | tail -1)
-          gh release create "presentation-$(date +%Y%m%d-%H%M)" "$D/video.mp4" "$D/cover.jpg" "$D/meta.json" "$D/subs.srt" --title "Présentation" --notes "Vidéo de présentation de la chaîne"
+          D=$(ls -d out/*-${{ inputs.mode }} | tail -1)
+          gh release create "presentation-${{ inputs.mode }}-$(date +%Y%m%d-%H%M)" "$D/video.mp4" "$D/cover.jpg" "$D/meta.json" "$D/subs.srt" --title "Présentation" --notes "Vidéo de présentation de la chaîne"

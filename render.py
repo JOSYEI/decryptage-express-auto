@@ -147,7 +147,7 @@ def block_clips(kws, need, off=0):
 
 def main():
     if os.environ.get("PRESENTATION"):  # vidéo de présentation de la chaîne (script fixe, aucun appel LLM)
-        script = json.load(open(os.path.join(HERE, "presentation.json")))
+        script = json.load(open(os.path.join(HERE, "presentation.json" if SHORT else "presentation_long.json")))
         topics = [{"title": script["title"], "articles": [{"title": script["title"], "source": "Décryptage Express"}], "cluster": {"items": [], "tok": []}}]
     else:
         topic = json.load(open(os.path.join(HERE, "topic.json")))
