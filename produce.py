@@ -84,11 +84,15 @@ def llm_script(topic):
         sys.exit("LLM_API_KEY manquante dans config.env")
     base = (ENV.get("LLM_BASE_URL") or "https://api.deepseek.com").rstrip("/")
     model = ENV.get("LLM_MODEL") or "deepseek-chat"
+    try:
+        _ins = "\n".join(json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "insights.json")))["consignes"])
+    except Exception:
+        _ins = ""
     facts = "\n".join(f"- {a['title']} (source : {a['source']}, {a['published'][:10]})"
                       for a in topic["articles"])
     body = json.dumps({"model": model, "temperature": 0.4,
                        "response_format": {"type": "json_object"},
-                       "messages": [{"role": "system", "content": PROMPT},
+                       "messages": [{"role": "system", "content": PROMPT + (("\nConsignes tirées des statistiques réelles de la chaîne (à appliquer pour améliorer les vues) :\n" + _ins) if _ins else "")},
                                     {"role": "user", "content": f"Sujet : {topic['title']}\nFaits disponibles :\n{facts}"}]}).encode()
     req = urllib.request.Request(base + "/chat/completions", data=body,
                                  headers={"Content-Type": "application/json", "Authorization": "Bearer " + key})
