@@ -1,6 +1,86 @@
 {
-  "date": "2026-11-23",
-  "status": "skip",
-  "reason": "meilleur score 64.4 avec 0 source(s) fiable(s) (minimum 50 et 2)",
-  "topic": null
+  "date": "2026-11-24",
+  "status": "ok",
+  "reason": "",
+  "topic": {
+    "title": "Jensen Huang témoignera devant le Sénat américain le 3 décembre, après son retour surprise chez Nvidia",
+    "score": 68.3,
+    "trusted_sources": 1,
+    "articles": [
+      {
+        "title": "Jensen Huang témoignera devant le Sénat américain le 3 décembre, après son retour surprise chez Nvidia",
+        "source": "ZDNET",
+        "link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQMlBoakpOSEdsMDZYcnlYd2lVTG5hYkYyOHlMNnVULU5Odk1hYkhEWFZhci1yTlo5dEZ0ZmUzeEd2Y29tWmxaSnZtZU11Sm5PUEJ1NXVTSnlmX0ZkWnNRMENKWlEwemNQLV9iV2NtOXJYUy14b0dQOWRkWXlaRHJjUkxFY3VReEdQa1FWYXAxYzJfQUZHUGFsUGtscVZKNmVKV2JuN1c5MVplMXhEV245UXRhMHQ1T0dHTVZ4TkJzcW5kczRyeWJTZkZwZ1FINjJqY1FwR3hRSEt4OTBB?oc=5",
+        "published": "2026-11-24T05:59:54+00:00"
+      }
+    ]
+  },
+  "topics": [
+    {
+      "title": "Jensen Huang témoignera devant le Sénat américain le 3 décembre, après son retour surprise chez Nvidia",
+      "articles": [
+        {
+          "title": "Jensen Huang témoignera devant le Sénat américain le 3 décembre, après son retour surprise chez Nvidia",
+          "source": "ZDNET",
+          "link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQMlBoakpOSEdsMDZYcnlYd2lVTG5hYkYyOHlMNnVULU5Odk1hYkhEWFZhci1yTlo5dEZ0ZmUzeEd2Y29tWmxaSnZtZU11Sm5PUEJ1NXVTSnlmX0ZkWnNRMENKWlEwemNQLV9iV2NtOXJYUy14b0dQOWRkWXlaRHJjUkxFY3VReEdQa1FWYXAxYzJfQUZHUGFsUGtscVZKNmVKV2JuN1c5MVplMXhEV245UXRhMHQ1T0dHTVZ4TkJzcW5kczRyeWJTZkZwZ1FINjJqY1FwR3hRSEt4OTBB?oc=5",
+          "published": "2026-11-24T05:59:54+00:00"
+        }
+      ]
+    },
+    {
+      "title": "Le Pitch : Kaïdo, un tuteur IA pour enfant, sans écran - 24/11",
+      "articles": [
+        {
+          "title": "Le Pitch : Kaïdo, un tuteur IA pour enfant, sans écran - 24/11",
+          "source": "BFM",
+          "link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxNWUJwTWRFUmNWcEpzQUFaMnpJTGhQMHhGRk9SMlNfWDRLTkQ1TFppcE1GbWFBSzgtN3dPclR6djRaZzc3SXdHX1ZsY01qRjJkQ0YtV2Rfa0Mwc3lvdklHMGthNWJQUFZWWDJVWjl5Z3VuZ0FVVm8waXdRbEFBdC0yR25ZczFEd1NPeXVxWjkzZ0h1bXhfYzZrMGFjalZQZjZKWXJhcFNCM2cxdTBqRDlrY1BvUVdzSGU5M3EwNVFLSndUVTdNZi02LTUwS2szUGhHZ193S2xTRQ?oc=5",
+          "published": "2026-11-24T06:14:42+00:00"
+        }
+      ]
+    },
+    {
+      "title": "2026, le début de la fin du boom financier de l'intelligence artificielle ?",
+      "articles": [
+        {
+          "title": "2026, le début de la fin du boom financier de l'intelligence artificielle ?",
+          "source": "Les Echos",
+          "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNUFdGU2dUc1FTZ0xFU2wtQ3pBX1I0TDdxRUFDZTRxdTdJNkEzaTUxOGo4TlFMT3dOLUNmSVRlWVA2QWJ2bk1zWTJfWWNHN0NTTjF6b24tcWVBNlFGZkUwQ295MG5sM1lZRDNfYUFINHVxQlBZZy1ReVVHR0xFQlR0YTdnTzJUTkdEMDBwUHhUTVN1SF9jTmtKUlNBTjVWSW1uQXpvYnRoX0ROOHlaOE1aZmFHZ1ZlbENvem4tdGplR1N3WG9GaEpBZVVlTkk?oc=5",
+          "published": "2026-11-24T06:10:09+00:00"
+        }
+      ]
+    },
+    {
+      "title": "Le prix du Bitcoin chute sous $61,000 : le rallye de Nvidia était-il un piège haussier ?",
+      "articles": [
+        {
+          "title": "Le prix du Bitcoin chute sous $61,000 : le rallye de Nvidia était-il un piège haussier ?",
+          "source": "Invezz",
+          "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNelpzWFZJV3doQ0pWZ2p0bG5JeUZrY3lUUTRMeVdidTZ6b1NfR3ZFRDJoOHpsdVNBejZYRXRKYmVkbk1iNlZGbjk5SEVkM2p1ZFFIV2ZHR0d6eVh3cWkxSkIyMVNmbXVfUnNoQkNodzNJazlPV1Z5NVctd2lDZXotRjJTS29QVXpsX2tmbGQwWTNUUlE0TU9XeWIzWGd1aXZ1YTlJQjMzT1BrakF6bEkxaDJLOWp4THRteEV2V2RMMjVyMnBlY05FUE9aLUJsZw?oc=5",
+          "published": "2026-11-24T06:31:00+00:00"
+        }
+      ]
+    },
+    {
+      "title": "Jensen Huang à Nvidia : l’action bondit de 30% à Wall Street",
+      "articles": [
+        {
+          "title": "Jensen Huang à Nvidia : l’action bondit de 30% à Wall Street",
+          "source": "toulouse7.com",
+          "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQVmZ2YnNiRkpIUzh6YkRiV28xLUpUNjRJQUU2QThxMjVPWXVIWjJNRXN5d2VxX3N0QVFtTnZDNENQejhmQVg5SE1Gb3kzWk5Ub1hHWFZYakpuR2lBcTZfdGZWMWhfUHFzYkpuV1RER2Z2TEJQZFN1Z0lSb3FQQ29wdEh6Q2RnNjlKRDM1Nm1OY0gzQjlP?oc=5",
+          "published": "2026-11-24T06:30:36+00:00"
+        }
+      ]
+    },
+    {
+      "title": "Nvidia : cinq milliardaires gagnent 123 milliards de dollars sur le papier",
+      "articles": [
+        {
+          "title": "Nvidia : cinq milliardaires gagnent 123 milliards de dollars sur le papier",
+          "source": "Economie Matin",
+          "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOamJmQUZtWGdiakZlMmY5QnFrSHFybnBXdUtPN3F2aS1ua1lnR0luTXNLWWFRUGZkejBGaThkNllkNmhwdXZaMzllQ2kyZGw4ZDJDdkozRmFzd2xrdE1PSVZKcDFHd2R2a3c3MnpHbk5SbERjSWEtZnhTUnVKUGozZEZpV1Y?oc=5",
+          "published": "2026-11-24T06:15:00+00:00"
+        }
+      ]
+    }
+  ]
 }
