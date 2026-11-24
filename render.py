@@ -230,6 +230,10 @@ def main():
     import seo, cover
     S = seo.build(script, topics, MODE, [b["text"] for b in blocks])
     cover.make(f"{WORK}/video.mp4", script["title"], "ACTU IA" if SHORT else "DÉCRYPTAGE IA", f"{OUT}/cover.jpg", SHORT)
+    if SHORT:  # la couverture charte devient la toute première image : TikTok/Instagram/YouTube la prennent comme vignette automatique
+        try:
+            sh(f"ffmpeg -y -i '{OUT}/video.mp4' -i '{OUT}/cover.jpg' -filter_complex \"[1:v]scale=1080:1920,format=yuv420p[c];[0:v][c]overlay=0:0:enable='lt(n,3)'[o]\" -map [o] -map 0:a -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -c:a copy -movflags +faststart '{OUT}/v2.mp4' && mv '{OUT}/v2.mp4' '{OUT}/video.mp4'")
+        except Exception as e: print("cover 1re image ignorée", e, file=sys.stderr)
     json.dump({**S, "mode": MODE, "duration": round(total, 1), "language": "fr", "category": "Science et technologie", "ai_label": True,
                "topics": [t["title"] for t in topics]}, open(os.path.join(OUT, "meta.json"), "w"), ensure_ascii=False, indent=2)
     json.dump(sorted(used), open(REG, "w"))
