@@ -106,7 +106,7 @@ used = set(json.load(open(REG))) if os.path.exists(REG) else set()
 BAN = ("santa", "christmas", "xmas", "gift", "holiday", "snow", "winter", "party", "wedding", "baby", "celebrat", "costume", "toy")
 TECH = ["technology", "laptop", "server", "robot", "code", "stock-market", "business", "finance", "data", "smartphone", "hacker", "factory", "satellite",
         "laboratory", "microscope", "network", "screen", "keyboard", "programming", "drone", "electronics", "circuit-board", "hologram", "digital"]
-EXTRA = ["people", "woman", "man", "couple", "family", "child", "children", "kids", "love", "night", "city", "street", "home", "hands", "phone", "brain", "heart", "friends", "walking", "sunset", "rain", "window", "office", "work", "school", "student", "teenager", "mother", "father", "elderly", "hospital", "doctor", "money", "shopping", "cafe", "chatting", "talking", "typing"]
+EXTRA = ["people", "woman", "man", "couple", "family", "child", "children", "kids", "love", "night", "city", "street", "home", "hands", "phone", "brain", "heart", "friends", "walking", "sunset", "rain", "window", "office", "work", "school", "student", "teenager", "mother", "father", "elderly", "hospital", "doctor", "money", "shopping", "cafe", "talking", "typing", "grave", "cemetery", "candle", "flowers", "photo", "tablet", "classroom", "playground", "drawing", "lonely", "sad", "crying", "funeral", "grandfather", "baby", "parents", "playing", "study", "reading", "book", "library", "newspaper", "meeting", "presentation", "worker", "warehouse", "farm", "construction", "mirror", "letter", "ocean", "forest", "old-man"]
 _page = {}
 def page_ids(slug, pg=1):
     if (slug, pg) in _page: return _page[(slug, pg)]
@@ -145,6 +145,33 @@ def block_clips(kws, need, off=0):
         except Exception: continue
         if len(got) >= need: break
     return got
+
+
+def stat_card(outdir, value, label, n=150, short=False):
+    from PIL import Image, ImageDraw, ImageFont
+    os.makedirs(outdir, exist_ok=True)
+    fp = "/usr/share/fonts/truetype/roboto/unhinted/RobotoCondensed-Black.ttf"
+    if not os.path.exists(fp): fp = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    CW, CH = (900, 420) if short else (980, 400)
+    fv = ImageFont.truetype(fp, 190 if len(value) < 7 else 140); fl = ImageFont.truetype(fp, 46)
+    words = label.split(); lines = [""]
+    for w in words:
+        if len(lines[-1]) + len(w) > 30: lines.append("")
+        lines[-1] += (" " if lines[-1] else "") + w
+    for i in range(n):
+        t = i / 30; a = min(1, t / .35) * min(1, (n / 30 - t) / .35); a = max(a, 0)
+        k = 0.85 + 0.15 * min(1, t / .35)
+        im = Image.new("RGBA", (CW, CH), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+        d.rounded_rectangle((8, 8, CW - 8, CH - 8), 36, fill=(8, 14, 40, int(215 * a)), outline=(255, 214, 0, int(255 * a)), width=5)
+        vv = value
+        m = re.match(r"^(\d+)(.*)$", value)
+        if m: vv = str(int(int(m.group(1)) * min(1, t / 1.2))) + m.group(2)   # compteur animé
+        b = d.textbbox((0, 0), vv, font=fv); d.text(((CW - (b[2] - b[0])) // 2 - b[0], 30 - b[1]), vv, font=fv, fill=(255, 214, 0, int(255 * a)))
+        y = 250
+        for ln in lines[:3]:
+            b = d.textbbox((0, 0), ln, font=fl); d.text(((CW - (b[2] - b[0])) // 2 - b[0], y), ln, font=fl, fill=(255, 255, 255, int(255 * a))); y += 56
+        if k < 1: im = im.resize((int(CW * k), int(CH * k)), Image.LANCZOS)
+        out = Image.new("RGBA", (CW, CH), (0, 0, 0, 0)); out.alpha_composite(im, ((CW - im.width) // 2, (CH - im.height) // 2)); out.save(f"{outdir}/{i:03d}.png")
 
 def main():
     if os.environ.get("PRESENTATION"):  # vidéo de présentation de la chaîne (script fixe, aucun appel LLM)
@@ -252,7 +279,17 @@ def main():
     fc = (f"[0:v]ass='{WORK}/cap.ass'[b];[2:v]format=rgba,setpts=PTS-STARTPTS+0.1/TB[l];[3:v]format=rgba,setpts=PTS-STARTPTS+{ctat:.2f}/TB[c];"
           f"[b][l]overlay=x=(W-w)/2:y=(H-h)/2-80:eof_action=pass[b2];[b2][c]overlay=x={cx}:y={cy}:eof_action=pass[o0];"
           f"[o0]fade=t=in:st=0.1:d=0.5:color=white,fade=t=out:st={total-0.9:.2f}:d=0.9:color=black[o]")
-    sh(f"""ffmpeg -y -i '{WORK}/video.mp4' -i '{WORK}/audio.wav' -framerate 30 -i '{ov}/logo_in/%03d.png' -framerate 30 -i '{ov}/cta/%03d.png' -filter_complex "{fc}" -map "[o]" -map 1:a -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -c:a aac -b:a 192k -t {total:.2f} -movflags +faststart '{OUT}/video.mp4'""")
+    stats = [(starts[i] + 3.0, b["stat"]) for i, b in enumerate(blocks) if b.get("stat") and starts[i] + 8 < total - 8]
+    extra_in = ""
+    for j, (t0, (v, l)) in enumerate(stats):
+        stat_card(os.path.join(WORK, f"stat{j}"), v, l, 150, SHORT); extra_in += f" -framerate 30 -i '{WORK}/stat{j}/%03d.png'"
+        sx, sy = ("(W-w)/2", "H*0.12") if SHORT else ("(W-w)/2", "H*0.08")
+    if stats:
+        chain = ""; last = "o0"
+        for j, (t0, _) in enumerate(stats):
+            chain += f"[{4+j}:v]format=rgba,setpts=PTS-STARTPTS+{t0:.2f}/TB[st{j}];[{last}][st{j}]overlay=x={sx}:y={sy}:eof_action=pass[os{j}];"; last = f"os{j}"
+        fc = fc.replace("[o0]fade=t=in", chain + f"[{last}]fade=t=in", 1)
+    sh(f"""ffmpeg -y -i '{WORK}/video.mp4' -i '{WORK}/audio.wav' -framerate 30 -i '{ov}/logo_in/%03d.png' -framerate 30 -i '{ov}/cta/%03d.png'{extra_in} -filter_complex "{fc}" -map "[o]" -map 1:a -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -c:a aac -b:a 192k -t {total:.2f} -movflags +faststart '{OUT}/video.mp4'""")
     import seo, cover
     S = seo.build(script, topics, MODE, [b["text"] for b in blocks])
     cover.make(f"{WORK}/video.mp4", script["title"], "ACTU IA" if SHORT else "DÉCRYPTAGE IA", f"{OUT}/cover.jpg", SHORT)

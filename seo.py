@@ -13,7 +13,12 @@ def build(script, topics, mode, blocks_text, hours="08h00, 12h00, 16h00 et 20h00
     for t in topics:
         for w in words(t["title"]):
             if len(w) > 3 and w.lower() not in ST and w not in kws: kws.append(w)
-    for b in BANK:
+    if script.get("custom"):
+        BANK2 = ("relation humain IA,émotions et IA,intelligence artificielle,compagnon IA,IA et amour,IA et solitude,IA et deuil,IA et enfants,IA et travail,confiance en l'IA,"
+                 "ChatGPT,Replika,Character AI,psychologie,santé mentale,solitude,amour,deuil,parentalité,éducation,futur du travail,emploi et IA,esprit critique,"
+                 "effet Eliza,chatbot,IA générative,décryptage,société,technologie,bien-être,relations humaines,vie privée,addiction,adolescents,réseaux sociaux").split(",")
+    else: BANK2 = BANK
+    for b in BANK2:
         if b not in kws: kws.append(b)
     # tags
     tags = []

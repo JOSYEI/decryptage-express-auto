@@ -7,7 +7,9 @@ for part in open(src, encoding="utf8").read().strip().split("\n\n"):
     if part.startswith(("titre:", "desc:", "tags:")):
         for l in part.split("\n"): k, v = l.split(":", 1); head[k] = v.strip()
     else:
-        kw, txt = part.split("|", 1); blocks.append({"text": " ".join(txt.split()), "keywords": [k.strip() for k in kw.split(",")]})
+        kw, txt = part.split("|", 1); st = None
+        if "@@" in txt: txt, st = txt.split("@@", 1); st = [x.strip() for x in st.split(";", 1)]
+        blocks.append({"text": " ".join(txt.split()), "keywords": [k.strip() for k in kw.split(",")], **({"stat": st} if st else {})})
 n = sum(len(b["text"].split()) for b in blocks)
 json.dump({"title": head["titre"], "description": head["desc"], "hashtags": head["tags"].split(), "blocks": blocks}, open(out, "w", encoding="utf8"), ensure_ascii=False, indent=1)
 print(out, len(blocks), "blocs", n, "mots ~", round(n / 165, 1), "min")

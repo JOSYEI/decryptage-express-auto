@@ -1,0 +1,17 @@
+titre: Il a reparlé à sa fiancée morte grâce à une IA : l'histoire qui divise
+desc: Un homme recrée sa fiancée disparue avec une intelligence artificielle. Consolation ou piège émotionnel ? L'histoire vraie, ce que disent les psychologues, et trois règles pour ne pas s'y perdre.
+tags: #IA #Deuil #Émotions #Psychologie #Shorts
+
+candle,night,home | Imagine recevoir un message de quelqu'un qui est mort. Pas un fantôme : une intelligence artificielle qui parle exactement comme lui. Ça existe déjà, et l'histoire de Joshua Barbeau a fait le tour du monde. En trois minutes, je t'explique ce qu'il a fait, ce que ça a provoqué, et pourquoi les psychologues sont partagés.
+
+man,laptop,typing | En 2021, Joshua perd sa fiancée Jessica depuis huit ans. Il utilise un service fondé sur un modèle de langage, lui fournit ses anciens messages, quelques souvenirs, des traits de caractère. Et la machine lui répond avec des phrases qui lui ressemblent tellement qu'il en pleure pendant des heures. @@ 8 ans;Le temps écoulé depuis sa mort
+
+server,data,technology | Comment ça marche ? Le programme analyse des messages, des courriels, parfois des enregistrements de voix. Il repère le style, les expressions favorites, puis produit de nouvelles phrases dans la même tonalité. Il imite la surface, pas le fond. Il ne se souvient de rien, il ne ressent rien : il prédit des mots probables.
+
+heart,hands,family | Et pourtant, certains y trouvent un vrai réconfort. Dire ce qu'on n'a pas eu le temps de dire. Faire un dernier adieu. Écrire à quelqu'un qui ne peut plus répondre est une pratique reconnue pour traverser le chagrin. La machine peut en être le support, à condition qu'elle reste un rituel de fin.
+
+doctor,hospital,brain | Le danger, c'est de suspendre le deuil au lieu de le traverser. Un programme qui répond chaque soir avec la même douceur crée l'illusion que rien n'a changé. Les cliniciens parlent de deuil prolongé quand la douleur reste figée et empêche de vivre. Là, la machine ne soigne plus, elle retient.
+
+phone,smartphone,screen | Autre alerte : l'argent. Des chercheurs de l'université de Cambridge ont imaginé des services qui placeraient de la publicité dans la voix d'un grand-père, ou rendraient la conversation payante au moment où l'émotion est la plus forte. Et la personne disparue, elle, n'a jamais donné son accord.
+
+woman,sad,window | Mes trois règles. Un : pas seul, parle-en à quelqu'un de confiance. Deux : fixe des limites, un adieu plutôt qu'un rendez-vous quotidien. Trois : vérifie qui garde les données, et si ça t'empêche d'avancer, arrête et consulte. Abonne-toi à Décryptage Express pour comprendre ce que l'IA fait à nos émotions, et dis-moi ton avis en commentaire.
