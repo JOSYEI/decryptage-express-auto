@@ -1,8 +1,8 @@
 name: Bilan analytics quotidien
 # 10h Paris (09h UTC) : statistiques des dernières 24 h, bilan dans bilans/, consignes d'amélioration pour les prochains scripts.
 on:
-  schedule:
-    - cron: "0 9 * * *"
+  # PAUSE schedule:
+    # PAUSE - cron: "0 9 * * *"
   workflow_dispatch:
 permissions:
   contents: write

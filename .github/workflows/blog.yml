@@ -1,7 +1,7 @@
 name: Blog (articles + vidéos YouTube intégrées)
 on:
-  schedule:
-    - cron: "15 */2 * * *"
+  # PAUSE schedule:
+    # PAUSE - cron: "15 */2 * * *"
   workflow_dispatch:
 permissions:
   contents: write
