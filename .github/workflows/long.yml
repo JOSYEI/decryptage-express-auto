@@ -1,8 +1,6 @@
 name: Vidéo longue (collecte 10h -> publication 11h)
 # 09h UTC = 10h Paris en hiver. Fenêtre d'actu : veille 10h -> jour 10h.
 on:
-  schedule:
-    - cron: "0 9 * * *"
   workflow_dispatch:
 permissions:
   contents: write
