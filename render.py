@@ -101,8 +101,12 @@ async def say(text, path):
         words = [(w, s - sum(b - a for a, b in cuts if b <= s + 1e-6), e - sum(b - a for a, b in cuts if b <= s + 1e-6)) for w, s, e in words]
     return words
 
-REG = os.path.join(HERE, "used_clips.json")
-used = set(json.load(open(REG))) if os.path.exists(REG) else set()
+REG = os.path.join(HERE, os.environ.get("USED_FILE") or "used_clips.json")
+PAR = os.environ.get("PARITY", "")
+used = set()
+for _f in ("used_clips.json", "used_clips_A.json", "used_clips_B.json", os.path.basename(REG)):
+    _p = os.path.join(HERE, _f)
+    if os.path.exists(_p): used |= set(json.load(open(_p)))
 BAN = ("santa", "christmas", "xmas", "gift", "holiday", "snow", "winter", "party", "wedding", "baby", "celebrat", "costume", "toy")
 TECH = ["technology", "laptop", "server", "robot", "code", "stock-market", "business", "finance", "data", "smartphone", "hacker", "factory", "satellite",
         "laboratory", "microscope", "network", "screen", "keyboard", "programming", "drone", "electronics", "circuit-board", "hologram", "digital"]
@@ -114,7 +118,7 @@ def page_ids(slug, pg=1):
     for att in range(3):
         try:
             u = f"https://mixkit.co/free-stock-video/{slug}/" + (f"?page={pg}" if pg > 1 else "")
-            html = get(u).decode("utf8", "ignore"); ids = list(dict.fromkeys(re.findall(r"assets\.mixkit\.co/videos/(\d+)/", html))); break
+            html = get(u).decode("utf8", "ignore"); ids = list(dict.fromkeys(re.findall(r"assets\.mixkit\.co/videos/(\d+)/", html))); ids = [i for i in ids if not PAR or int(i) % 2 == int(PAR)]; break
         except Exception as e:
             if "429" in str(e): time.sleep(20 * (att + 1))
             else: break

@@ -7,12 +7,13 @@ on:
     inputs:
       script: { description: 'script JSON (validation)', required: false, default: '' }
       tag: { description: 'tag release', required: false, default: '' }
+      lane: { description: 'A ou B', required: false, default: 'A' }
 permissions:
   contents: write
 jobs:
   long:
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -26,6 +27,8 @@ jobs:
       - name: Montage (recette v6)
         env:
           SCRIPT_FILE: ${{ inputs.script }}
+          USED_FILE: used_clips_${{ inputs.lane }}.json
+          PARITY: ${{ inputs.lane == 'A' && '0' || '1' }}
           MODE: long
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
@@ -68,6 +71,12 @@ jobs:
             --arg ig "$(python igtext.py "$D")" --slurpfile m "$D/meta.json" \
             '{full:$full, skip_youtube:$skip, mode:$mode, video_url:$v, cover_url:$c, title:$m[0].title, description:$m[0].description, tags:$m[0].tags, fb_text:($m[0].description[0:2000]), ig_text:$ig, pinned_comment:$m[0].pinned_comment}' \
             | curl -sS -X POST -H "Content-Type: application/json" -d @- "$HOOK"
+      - name: Registre clips (validation)
+        if: ${{ inputs.script != '' }}
+        run: |
+          git config user.name "de-auto"; git config user.email "de-auto@users.noreply.github.com"
+          git add used_clips_*.json; git commit -qm "clips ${{ inputs.tag }}" || true
+          for i in 1 2 3 4 5; do git pull -q --rebase origin ${{ github.ref_name }} && git push -q origin HEAD:${{ github.ref_name }} && break; sleep 5; done
       - name: Journal
         if: ${{ inputs.script == '' }}
         run: |
