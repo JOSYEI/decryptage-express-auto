@@ -1,0 +1,87 @@
+[
+ {
+  "date": "2026-11-25",
+  "slot": "10:00",
+  "tag": "v47-mer-long",
+  "nets": [
+   "fblong"
+  ]
+ },
+ {
+  "date": "2026-11-25",
+  "slot": "16:00",
+  "tag": "v47-mer-short",
+  "nets": [
+   "fb",
+   "ig"
+  ]
+ },
+ {
+  "date": "2026-11-26",
+  "slot": "10:00",
+  "tag": "v47-jeu-long",
+  "nets": [
+   "fblong"
+  ]
+ },
+ {
+  "date": "2026-11-26",
+  "slot": "16:00",
+  "tag": "v47-jeu-short",
+  "nets": [
+   "fb",
+   "ig"
+  ]
+ },
+ {
+  "date": "2026-11-27",
+  "slot": "10:00",
+  "tag": "v47-ven-long",
+  "nets": [
+   "fblong"
+  ]
+ },
+ {
+  "date": "2026-11-27",
+  "slot": "16:00",
+  "tag": "v47-ven-short",
+  "nets": [
+   "fb",
+   "ig"
+  ]
+ },
+ {
+  "date": "2026-11-28",
+  "slot": "10:00",
+  "tag": "v47-sam-long",
+  "nets": [
+   "fblong"
+  ]
+ },
+ {
+  "date": "2026-11-28",
+  "slot": "16:00",
+  "tag": "v47-sam-short",
+  "nets": [
+   "fb",
+   "ig"
+  ]
+ },
+ {
+  "date": "2026-11-29",
+  "slot": "10:00",
+  "tag": "v47-dim-long",
+  "nets": [
+   "fblong"
+  ]
+ },
+ {
+  "date": "2026-11-29",
+  "slot": "16:00",
+  "tag": "v47-dim-short",
+  "nets": [
+   "fb",
+   "ig"
+  ]
+ }
+]
