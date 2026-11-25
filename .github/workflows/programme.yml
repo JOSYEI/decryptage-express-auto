@@ -1,0 +1,27 @@
+name: Programmation Facebook et Instagram (planning.json)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "45 14 * * *"   # attend l'heure exacte du Short, puis publie Instagram
+    - cron: "30 7 * * *"    # programme les publications Facebook à venir
+permissions:
+  contents: write
+concurrency: programme
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Exécuter le planning
+        env:
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+        run: python run_plan.py
+      - name: Mémoriser
+        run: |
+          git config user.name "de-auto"; git config user.email "de-auto@users.noreply.github.com"
+          git add planning_done.json; git commit -m "Planning exécuté" || true; git pull --rebase -q || true; git push || true

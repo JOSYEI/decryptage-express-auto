@@ -6,6 +6,7 @@ Code de sortie 0 = publie ; 3 = non configure ; 1 = echec (le workflow bascule a
 import json, os, sys, time, urllib.parse, urllib.request, urllib.error
 D, KIND, VURL = sys.argv[1], sys.argv[2], sys.argv[3]
 G = "https://graph.facebook.com/v21.0"
+SCHED = os.environ.get("SCHEDULE_AT")  # epoch (UTC) : programmation exacte (Facebook) ou attente avant publication (Instagram)
 PAGE, TOK, IG = (os.environ.get(k) for k in ("FB_PAGE_ID", "FB_PAGE_TOKEN", "IG_USER_ID"))
 if not (PAGE and TOK) or (KIND == "ig" and not IG): print("Meta direct non configure"); sys.exit(3)
 m = json.load(open(f"{D}/meta.json"))
@@ -23,14 +24,17 @@ if KIND == "fb":  # Reel Facebook
         st = get(f"{G}/{s['video_id']}?fields=status&access_token={TOK}").get("status", {})
         if st.get("uploading_phase", {}).get("status") == "complete" or st.get("video_status") in ("ready", "upload_complete"): break
         time.sleep(10)
-    post(f"{G}/{PAGE}/video_reels", {"upload_phase": "finish", "video_id": s["video_id"], "video_state": "PUBLISHED",
-         "description": m["description"][:2000], "access_token": TOK})
+    fin = {"upload_phase": "finish", "video_id": s["video_id"], "video_state": "PUBLISHED", "description": m["description"][:2000], "access_token": TOK}
+    if SCHED: fin.update(video_state="SCHEDULED", scheduled_publish_time=SCHED)
+    post(f"{G}/{PAGE}/video_reels", fin)
     try: post(f"{G}/{s['video_id']}/comments", {"message": m["pinned_comment"], "access_token": TOK})
     except Exception as e: print("commentaire non poste", e)
     print("Facebook reel OK", s["video_id"])
 elif KIND == "fblong":  # Video longue Facebook
-    r = post(f"{G}/{PAGE}/videos", {"file_url": VURL, "title": m["title"][:255],
-             "description": (m["description"][:1900] + "\n\n📖 Article complet et toutes nos vidéos : https://decryptageexpress.com"), "access_token": TOK})
+    d = {"file_url": VURL, "title": m["title"][:255],
+         "description": (m["description"][:1900] + "\n\n📖 Article complet et toutes nos vidéos : https://decryptageexpress.com"), "access_token": TOK}
+    if SCHED: d.update(published="false", scheduled_publish_time=SCHED, unpublished_content_type="SCHEDULED")
+    r = post(f"{G}/{PAGE}/videos", d)
     print("Facebook video OK", r.get("id"))
 elif KIND == "ig":  # Reel Instagram
     import subprocess
@@ -41,5 +45,6 @@ elif KIND == "ig":  # Reel Instagram
         if sc == "FINISHED": break
         if sc in ("ERROR", "EXPIRED"): print("Instagram traitement", sc); sys.exit(1)
         time.sleep(10)
+    if SCHED: time.sleep(max(0, int(SCHED) - time.time()))  # publication à l'heure exacte
     r = post(f"{G}/{IG}/media_publish", {"creation_id": c["id"], "access_token": TOK})
     print("Instagram reel OK", r.get("id"))
