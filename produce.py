@@ -44,7 +44,7 @@ RÈGLES STRICTES : utilise UNIQUEMENT les faits présents dans les titres et sou
 n'invente aucun chiffre, citation, date ni nom ; si une information manque, dis-le franchement
 (« les détails ne sont pas encore connus ») ; cite les sources à voix haute (« selon L'Usine Digitale »).
 Structure : accroche choc, contexte en 2 phrases, ce qui change, limites et questions ouvertes,
-conclusion courte + invitation à s'abonner (« Abonne-toi, une vidéo chaque jour à 10h »).
+conclusion courte + invitation à s'abonner (« Abonne-toi pour ne rien rater »).
 Réponds UNIQUEMENT en JSON : {"title": "...(max 90 car., mots-clés robots humanoïdes)",
 "description": "2-3 phrases", "hashtags": ["#..."] (8 à 12, bien nichés),
 "scenes": [{"narration": "40 à 70 mots", "onscreen": "6 mots max", "keywords": ["3 termes de recherche EN ANGLAIS pour des photos libres, ex: humanoid robot factory"], "highlight": true|false}]}
@@ -59,7 +59,7 @@ MOCK_SCRIPT = {
          "onscreen": "Essai du pipeline", "keywords": ["humanoid robot", "robot factory", "artificial intelligence"], "highlight": True},
         {"narration": "Cette scène vérifie le montage, les titres à l'écran et la synchronisation. " * 3,
          "onscreen": "Montage et titres", "keywords": ["robot arm", "technology lab"], "highlight": False},
-        {"narration": "Dernière scène : abonne-toi pour une nouvelle vidéo chaque jour à dix heures. " * 3,
+        {"narration": "Dernière scène : abonne-toi pour ne rien rater. " * 3,
          "onscreen": "Abonne-toi", "keywords": ["robot hand", "futuristic city"], "highlight": True},
     ],
 }
