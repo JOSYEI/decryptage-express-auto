@@ -10,7 +10,7 @@ def est_tags(L): return sum(len(x) + (2 if " " in x else 0) for x in L) + len(L)
 def build(script, topics, mode, blocks_text, hours="08h00, 12h00, 16h00 et 20h00"):
     short = mode == "short"
     kws = []
-    for t in topics:
+    for t in ([] if script.get('custom') else topics):
         for w in words(t["title"]):
             if len(w) > 3 and w.lower() not in ST and w not in kws: kws.append(w)
     if script.get("custom"):
@@ -59,7 +59,7 @@ def build(script, topics, mode, blocks_text, hours="08h00, 12h00, 16h00 et 20h00
         k = pool[i % len(pool)]; add = (", " if body != kline else "") + k
         if len(desc) + len(body) + len(add) + len(tail) > 4995: break
         body += add; i += 1
-        if i > 400: break
+        if i > 400 or (script.get('custom') and i >= len(pool)): break
     desc = (desc + body + tail)[:5000]
     t0 = topics[0]["title"]
     if len(t0) > 110: t0 = t0[:110].rsplit(" ", 1)[0].rstrip(" ,;:-—") + "…"
