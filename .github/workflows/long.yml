@@ -6,12 +6,30 @@ on:
   workflow_dispatch:
     inputs:
       script: { description: 'script JSON (validation)', required: false, default: '' }
+      upload: { description: 'tag release à déposer en PRIVÉ sur YouTube', required: false, default: '' }
       tag: { description: 'tag release', required: false, default: '' }
       lane: { description: 'A ou B', required: false, default: 'A' }
 permissions:
   contents: write
 jobs:
+  upload:
+    if: ${{ inputs.upload != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dépôt PRIVÉ sur YouTube
+        env:
+          GH_TOKEN: ${{ github.token }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          PRIVACY: private
+        run: |
+          mkdir -p dl && gh release download "${{ inputs.upload }}" -D dl
+          python publish.py dl
+          gh release edit "${{ inputs.upload }}" --notes "yt:$(python -c "import json;print(json.load(open('dl/youtube.json'))['id'])")"
   long:
+    if: ${{ inputs.upload == '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:

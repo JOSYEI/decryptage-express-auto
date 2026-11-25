@@ -15,7 +15,7 @@ A = {"Authorization": "Bearer " + tok}
 m = json.load(open(f"{D}/meta.json"))
 body = {"snippet": {"title": m["title"], "description": m["description"], "tags": [t for t in m["tags"].split(",") if t],
         "categoryId": "28", "defaultLanguage": "fr", "defaultAudioLanguage": "fr"},
-        "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False, "containsSyntheticMedia": True}}
+        "status": {"privacyStatus": os.environ.get("PRIVACY", "public"), "selfDeclaredMadeForKids": False, "containsSyntheticMedia": True}}
 video = open(f"{D}/video.mp4", "rb").read()
 _, h, _ = call("https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status",
                json.dumps(body).encode(), {**A, "Content-Type": "application/json; charset=UTF-8", "X-Upload-Content-Type": "video/mp4",
