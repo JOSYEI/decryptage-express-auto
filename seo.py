@@ -35,10 +35,14 @@ def build(script, topics, mode, blocks_text, hours="08h00, 12h00, 16h00 et 20h00
     transcript = " ".join(blocks_text)
     if len(transcript) > 1800: transcript = transcript[:1800].rsplit(".", 1)[0] + "."
     retenir = "\n".join("• " + re.split(r"(?<=[.!?])\s", b)[0] for b in blocks_text[:8])
-    desc = (f"{script['description']}\n\n👇 Dis-moi en commentaire : ce sujet te surprend-il ? 🔔 Abonne-toi à Décryptage Express pour l'actu IA, tech et bourse décryptée chaque jour.\n\n"
+    if script.get("custom"):
+        desc = (f"{script['description']}\n\n👇 Dis-moi en commentaire ce que tu en penses. 🔔 Abonne-toi à Décryptage Express pour comprendre ce que l'IA change dans nos émotions et nos vies.\n\n"
+                f"✅ CE QU'IL FAUT RETENIR\n{retenir}\n\n📝 LE RÉSUMÉ\n{transcript}\n\n📩 Newsletter gratuite : https://decryptageexpress.com\n✉️ Contact : contact@decryptageexpress.com\n\n")
+    else:
+      desc = (f"{script['description']}\n\n👇 Dis-moi en commentaire : ce sujet te surprend-il ? 🔔 Abonne-toi à Décryptage Express pour l'actu IA, tech et bourse décryptée chaque jour.\n\n"
             f"✅ CE QU'IL FAUT RETENIR\n{retenir}\n\n📝 LE RÉSUMÉ COMPLET\n{transcript}\n\n"
             f"🗞️ LES SUJETS DU JOUR\n" + "\n".join("• " + t["title"] + " (" + ", ".join(sorted({a['source'] for a in t['articles']})[:3]) + ")" for t in topics) +
-            f"\n\n⏰ UN NOUVEAU DÉCRYPTAGE CHAQUE JOUR\nUne vidéo longue et un Short, tous les jours.\n\n📩 Newsletter gratuite : https://decryptageexpress.com\n✉️ Contact : contact@decryptageexpress.com\n\n")
+            f"\n\n📩 Newsletter gratuite : https://decryptageexpress.com\n✉️ Contact : contact@decryptageexpress.com\n\n")
     tail = "\n\nContenu réalisé avec l'aide de l'IA (voix de synthèse, images et vidéos assemblées).\n\n" + hashtags
     kline = "🔑 MOTS-CLÉS : "
     pool = [k for k in kws]

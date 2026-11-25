@@ -10,6 +10,9 @@ on:
     - cron: "0 14 * * *"   # collecte 15h -> Short 16h
     - cron: "0 18 * * *"   # collecte 19h -> Short 20h
   workflow_dispatch:
+    inputs:
+      script: { description: 'script JSON (validation)', required: false, default: '' }
+      tag: { description: 'tag release', required: false, default: '' }
 permissions:
   contents: write
 jobs:
@@ -23,10 +26,12 @@ jobs:
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-roboto
       - run: pip install pillow edge-tts numpy
       - name: Collecte (actu des 60 dernières minutes)
+        if: ${{ inputs.script == '' }}
         env: { MODE: short }
         run: python collect.py
       - name: Montage (recette v6)
         env:
+          SCRIPT_FILE: ${{ inputs.script }}
           MODE: short
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
@@ -55,8 +60,9 @@ jobs:
         run: |
           D=$(ls -d out/*-short 2>/dev/null | tail -1)
           [ -n "$D" ] && [ -f "$D/video.mp4" ] || { echo "pas de vidéo"; exit 0; }
-          TAG="short-$(date +%Y%m%d-%H%M)"
+          TAG="${{ inputs.tag }}"; [ -n "$TAG" ] || TAG="short-$(date +%Y%m%d-%H%M)"
           gh release create "$TAG" "$D/video.mp4" "$D/cover.jpg" "$D/meta.json" "$D/subs.srt" --title "$TAG" --notes "Vidéo short automatique"
+          [ -n "${{ inputs.script }}" ] && { echo "mode validation : aucune publication"; exit 0; }
           B="https://github.com/${{ github.repository }}/releases/download/$TAG"
           # Publication DIRECTE (gratuite, sans quota) : YouTube, Facebook reel, Instagram reel. Make = secours uniquement.
           SKIP=false; python publish.py "$D" || python publish.py "$D" && SKIP=true || true
@@ -76,6 +82,7 @@ jobs:
             '{full:$full, ig_metricool:$igm, skip_youtube:$skip, mode:$mode, video_url:$v, cover_url:$c, title:$m[0].title, description:$m[0].description, tags:$m[0].tags, fb_text:($m[0].description[0:2000]), ig_text:$ig, pinned_comment:$m[0].pinned_comment}' \
             | curl -sS -X POST -H "Content-Type: application/json" -d @- "$HOOK"
       - name: Journal
+        if: ${{ inputs.script == '' }}
         run: |
           git config user.name "de-auto"; git config user.email "de-auto@users.noreply.github.com"
           git add history.json log.csv topic.json used_clips.json 2>/dev/null || true

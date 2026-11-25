@@ -106,6 +106,7 @@ used = set(json.load(open(REG))) if os.path.exists(REG) else set()
 BAN = ("santa", "christmas", "xmas", "gift", "holiday", "snow", "winter", "party", "wedding", "baby", "celebrat", "costume", "toy")
 TECH = ["technology", "laptop", "server", "robot", "code", "stock-market", "business", "finance", "data", "smartphone", "hacker", "factory", "satellite",
         "laboratory", "microscope", "network", "screen", "keyboard", "programming", "drone", "electronics", "circuit-board", "hologram", "digital"]
+EXTRA = ["people", "woman", "man", "couple", "family", "child", "children", "kids", "love", "night", "city", "street", "home", "hands", "phone", "brain", "heart", "friends", "walking", "sunset", "rain", "window", "office", "work", "school", "student", "teenager", "mother", "father", "elderly", "hospital", "doctor", "money", "shopping", "cafe", "chatting", "talking", "typing"]
 _page = {}
 def page_ids(slug, pg=1):
     if (slug, pg) in _page: return _page[(slug, pg)]
@@ -128,7 +129,7 @@ def block_clips(kws, need, off=0):
             cands.extend(i for i in ids if i not in used and i not in cands)
     for kw in kws:
         for sg in re.sub(r"[^a-z0-9]+", "-", kw.lower()).strip("-").split("-"):
-            if sg in TECH: add(sg, 3)
+            if sg in TECH or sg in EXTRA: add(sg, 3)
         if len(cands) >= need: break
     for k in range(len(TECH)):
         if len(cands) >= need: break
@@ -149,6 +150,10 @@ def main():
     if os.environ.get("PRESENTATION"):  # vidéo de présentation de la chaîne (script fixe, aucun appel LLM)
         script = json.load(open(os.path.join(HERE, "presentation.json" if SHORT else "presentation_long.json")))
         topics = [{"title": script["title"], "articles": [{"title": script["title"], "source": "Décryptage Express"}], "cluster": {"items": [], "tok": []}}]
+    elif os.environ.get("SCRIPT_FILE"):  # script rédigé à l'avance (sujets émotions / relation humain-IA)
+        script = json.load(open(os.path.join(HERE, os.environ["SCRIPT_FILE"])))
+        script["custom"] = True
+        topics = [{"title": script["title"], "articles": [{"title": script["title"], "source": ""}], "cluster": {"items": [], "tok": []}}]
     else:
         topic = json.load(open(os.path.join(HERE, "topic.json")))
         topics = topic.get("topics") or ([topic["topic"]] if topic.get("topic") else [])
