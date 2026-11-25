@@ -38,10 +38,26 @@
    ]
   },
   {
+   "text": "Pour bien comprendre, imagine un étudiant brillant qui doit répondre à tout, sans jamais pouvoir dire « je ne sais pas ». Il a lu énormément de textes, il connaît les tournures, les formules, les raisonnements typiques. Quand il ignore un point, il improvise avec assurance, en s'appuyant sur ce qui ressemble le plus à une bonne réponse. C'est à peu près ce que fait un modèle de langage. Les concepteurs travaillent à réduire ces erreurs, mais personne ne promet leur disparition totale.",
+   "keywords": [
+    "code",
+    "programming",
+    "laptop"
+   ]
+  },
+  {
    "text": "Cela tient à un biais bien connu en psychologie : on fait confiance à ceux qui parlent avec assurance. Un ton posé, un vocabulaire précis, aucune hésitation, et nous interprétons cela comme de la compétence. C'est vrai avec un médecin, un vendeur, un politicien. C'est encore plus vrai avec une machine, car nous lui prêtons spontanément une forme d'objectivité. Un ordinateur ne ment pas, pense-t-on. Sauf qu'ici, il ne ment pas, il invente, ce qui est autrement plus difficile à détecter.",
    "keywords": [
     "people",
     "talking",
+    "cafe"
+   ]
+  },
+  {
+   "text": "La confiance se joue aussi dans le groupe. Si tes collègues, tes amis, tes réseaux utilisent tel assistant et le jugent fiable, tu auras tendance à le croire aussi. C'est le phénomène de preuve sociale. Il peut te protéger, quand le groupe est vigilant, et t'exposer, quand tout le monde répète la même erreur sans la vérifier. Une réponse reprise cent fois n'est pas plus vraie qu'une réponse reprise une fois. La répétition donne une impression de solidité, jamais une garantie.",
+   "keywords": [
+    "friends",
+    "people",
     "cafe"
    ]
   },
@@ -59,6 +75,14 @@
     "airplane",
     "airport",
     "city"
+   ]
+  },
+  {
+   "text": "Dans la finance, le risque est particulièrement concret. Demander à une IA quel placement choisir peut donner une réponse séduisante, mais elle ne connaît ni ton budget réel, ni ta tolérance au risque, ni ta situation fiscale. Elle peut aussi mélanger des informations anciennes et récentes. Pour un choix qui engage ton argent, utilise l'IA pour comprendre les notions et préparer tes questions, puis confronte-les à un conseiller indépendant ou à des sources officielles. Un gain de temps ne vaut pas une perte d'économies.",
+   "keywords": [
+    "money",
+    "finance",
+    "stock-market"
    ]
   },
   {
@@ -90,6 +114,14 @@
    ]
   },
   {
+   "text": "Il y a aussi les conversations où l'on se sent mal. À deux heures du matin, une IA qui répond avec calme peut aider à se sentir moins seul. Mais elle n'a pas la capacité de juger de la gravité d'une situation, ni d'intervenir en cas d'urgence. Si tu traverses une grande détresse, contacte un proche, un professionnel de santé, ou un service d'urgence. Une IA peut être un premier appui pour mettre des mots. Elle ne doit pas être le seul recours quand ta sécurité est en jeu.",
+   "keywords": [
+    "woman",
+    "phone",
+    "night"
+   ]
+  },
+  {
    "text": "La confiance a aussi une dimension émotionnelle. Quand une IA te parle avec douceur, se souvient de ta journée, adopte un ton chaleureux, tu lui accordes plus de crédit. C'est un réflexe très humain : on croit plus facilement ceux qui nous plaisent. Les concepteurs le savent et soignent la personnalité de leurs assistants. Ce n'est pas forcément malveillant, mais c'est une raison de plus de faire la part des choses entre la gentillesse d'un ton et la qualité d'une information.",
    "keywords": [
     "phone",
@@ -103,6 +135,14 @@
     "hacker",
     "network",
     "server"
+   ]
+  },
+  {
+   "text": "Et pour les plus jeunes, l'esprit critique doit s'apprendre. Un enfant qui reçoit des réponses claires, assurées, fluides, a naturellement tendance à les croire. À l'école comme à la maison, il est utile de lui montrer des cas où l'IA se trompe, et de lui demander de repérer l'erreur. Ce petit jeu développe un réflexe précieux : douter sans devenir cynique. Les enfants d'aujourd'hui grandiront avec ces outils. Mieux vaut qu'ils apprennent tôt à les questionner.",
+   "keywords": [
+    "child",
+    "teenager",
+    "school"
    ]
   },
   {

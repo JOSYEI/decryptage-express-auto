@@ -8,9 +8,13 @@ stock-market,finance,business | D'abord les chiffres, avec prudence. En 2025, le
 
 bank,money,shopping | Un exemple qui rassure un peu. Quand les distributeurs de billets sont apparus, on a prédit la disparition des guichetiers. Pourtant, aux États-Unis, leur nombre a continué d'augmenter pendant des années : les agences coûtaient moins cher, il y en a eu plus, et le métier est passé du comptage de billets au conseil.
 
+factory,construction,worker | Et qui est le plus touché ? Les premières études suggèrent que l'IA générative concerne davantage les emplois de bureau, de rédaction, d'analyse et de service client. Cela surprend beaucoup de personnes diplômées, qui se croyaient à l'abri. À l'inverse, les métiers de terrain, du soin et du contact humain restent largement difficiles à automatiser. Personne n'est totalement protégé, et personne n'est condamné d'avance.
+
 laptop,code,programming | Il faut regarder ton métier tâche par tâche. Les tâches répétitives, faciles à décrire, sont les plus exposées. Celles qui demandent du jugement, de l'empathie, de la négociation et de la responsabilité le sont beaucoup moins. Et surtout, l'IA produit un premier jet, mais quelqu'un doit assumer le résultat.
 
 man,sad,office | Soyons honnêtes : la menace, souvent, ce n'est pas la machine seule, c'est la collègue qui la maîtrise. Mais cette compétence s'apprend. Elle ne demande pas d'être informaticien, juste de la curiosité et de la pratique.
+
+woman,doctor,hospital | Parlons aussi de l'émotion, souvent oubliée. Se sentir menacé dans son travail provoque du stress, de la colère, parfois de la honte. Beaucoup n'osent pas en parler, de peur de passer pour quelqu'un qui n'est pas à la hauteur. Pourtant, ces émotions sont très répandues. Les nommer, c'est déjà les alléger. Et si l'angoisse devient envahissante, parles-en à un professionnel de santé.
 
 hands,keyboard,typing | Premier réflexe : teste. Prends une tâche que tu fais chaque semaine, confie-la à une IA, regarde ce qui marche et ce qui échoue. En une heure, tu en sauras plus que dans dix articles. La peur de l'inconnu laisse place à une connaissance concrète.
 

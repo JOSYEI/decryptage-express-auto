@@ -27,7 +27,7 @@ def build(script, topics, mode, blocks_text, hours="08h00, 12h00, 16h00 et 20h00
     # titre : 95-100 caractères
     title = script["title"].strip().rstrip(".")
     suffix = " #Shorts" if short else ""
-    extras = [k for k in kws if k.lower() not in title.lower() and " " not in k]
+    extras = [] if script.get('custom') else [k for k in kws if k.lower() not in title.lower() and " " not in k]
     for k in extras:
         if len(title) + len(suffix) + 3 + len(k) <= 100 and len(title + suffix) < 96: title += " | " + k if " | " not in title else " " + k
     room = 100 - len(suffix)
@@ -39,7 +39,10 @@ def build(script, topics, mode, blocks_text, hours="08h00, 12h00, 16h00 et 20h00
     hashtags = " ".join(dict.fromkeys(script.get("hashtags", []) + ["#IA", "#DécryptageExpress"] + (["#Shorts"] if short else [])))
     transcript = " ".join(blocks_text)
     if len(transcript) > 1800: transcript = transcript[:1800].rsplit(".", 1)[0] + "."
-    retenir = "\n".join("• " + re.split(r"(?<=[.!?])\s", b)[0] for b in blocks_text[:8])
+    def _pt(b):
+        ss = re.split(r"(?<=[.!?])\s", b)
+        return next((x for x in ss if len(x) >= 55), ss[0])
+    retenir = "\n".join("• " + _pt(b) for b in blocks_text[1:9])
     if script.get("custom"):
         desc = (f"{script['description']}\n\n👇 Dis-moi en commentaire ce que tu en penses. 🔔 Abonne-toi à Décryptage Express pour comprendre ce que l'IA change dans nos émotions et nos vies.\n\n"
                 f"✅ CE QU'IL FAUT RETENIR\n{retenir}\n\n📝 LE RÉSUMÉ\n{transcript}\n\n📩 Newsletter gratuite : https://decryptageexpress.com\n✉️ Contact : contact@decryptageexpress.com\n\n")
@@ -60,6 +63,8 @@ def build(script, topics, mode, blocks_text, hours="08h00, 12h00, 16h00 et 20h00
     desc = (desc + body + tail)[:5000]
     t0 = topics[0]["title"]
     if len(t0) > 110: t0 = t0[:110].rsplit(" ", 1)[0].rstrip(" ,;:-—") + "…"
-    pinned = (f"📌 {t0} — qu'en pensez-vous ? Répondez en commentaire 👇 "
+    if script.get("custom"):
+        pinned = f"📌 {script['title']} Ton avis m'intéresse : dis-le en commentaire, avec bienveillance 👇 Abonne-toi à Décryptage Express pour explorer la relation entre l'humain et l'IA. {hashtags.split(' ')[0]} #DécryptageExpress"
+    else: pinned = (f"📌 {t0} — qu'en pensez-vous ? Répondez en commentaire 👇 "
               f"Abonnez-vous à Décryptage Express pour l'actu IA, tech et bourse décryptée chaque jour. {hashtags.split(' ')[0]} #IA")
     return {"title": title, "description": desc, "tags": ",".join(tags) + ",", "pinned_comment": pinned, "hashtags": hashtags}

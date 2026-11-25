@@ -8,6 +8,8 @@ teenager,phone,school | D'abord, deux usages très différents. L'assistant, qui
 
 lonely,sad,window | Le risque, c'est que cette confidente n'est ni une amie, ni une adulte responsable. Elle est conçue pour continuer la conversation, pas pour protéger l'enfant. Plusieurs familles américaines ont déposé des plaintes contre des plateformes, et des autorités ont ouvert des enquêtes. Le sujet est sérieux, mais il ne justifie pas la panique.
 
+kids,drawing,playing | Mais ce n'est pas tout noir. Un enfant timide peut s'entraîner à parler, un élève en difficulté peut recevoir une explication patiente tard le soir, et l'IA peut nourrir la créativité : inventer une histoire à partir de ses jouets, proposer des idées de dessins. L'essentiel est de garder l'enfant acteur : c'est lui qui imagine, qui choisit, qui corrige.
+
 server,data,network | Autre point : les données. Un enfant qui se confie livre ses peurs, son école, ses amis. Un texte envoyé à une plateforme n'est pas un journal intime. Règle d'or : jamais son nom complet, son adresse ou des photos de soi.
 
 mother,child,talking | Première phrase : « Montre-moi ce que tu fais, ça m'intéresse. » La curiosité ouvre la porte, l'interdiction pousse l'usage dans l'ombre. Deuxième phrase : « Tu sais, elle ne ressent rien, elle prédit des phrases. » Un enfant qui comprend ça garde une distance saine.

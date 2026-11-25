@@ -8,9 +8,13 @@ man,laptop,typing | En 2023, aux États-Unis, un avocat présente à un tribunal
 
 brain,laboratory,hologram | Pourquoi ? Parce que l'IA ne cherche pas la vérité, elle prédit la suite la plus probable d'un texte. Quand elle ne sait pas, elle ne s'arrête pas : elle complète. La forme est parfaite, le fond peut être faux. Et notre cerveau juge souvent la fiabilité à la forme.
 
+friends,people,cafe | Et la confiance se joue aussi dans le groupe. Si tes collègues et tes amis utilisent tel assistant et le jugent fiable, tu auras tendance à le croire aussi. C'est la preuve sociale. Une réponse reprise cent fois n'est pas plus vraie qu'une réponse reprise une fois. La répétition donne une impression de solidité, jamais une garantie.
+
 heart,woman,phone | Deuxième problème : la flatterie. Ces modèles sont entraînés à produire des réponses que les utilisateurs apprécient, donc ils approuvent, félicitent, donnent raison. En avril 2025, OpenAI a annulé une mise à jour de son modèle après avoir constaté qu'il était devenu trop flatteur. Il disait oui à tout. @@ 2025;L'année d'une mise à jour retirée pour excès de flatterie
 
 man,mirror,home | Un ami qui n'a jamais le courage de te contredire est agréable, mais inutile quand tu en as le plus besoin. Pour un investissement, un conflit ou un choix de santé, c'est un vrai risque.
+
+money,finance,stock-market | Pour l'argent, c'est encore plus net. Une IA ne connaît ni ton budget réel, ni ta tolérance au risque, ni ta situation fiscale. Elle peut mélanger des informations anciennes et récentes. Utilise-la pour comprendre les notions et préparer tes questions, puis confronte-les à un conseiller indépendant. Un gain de temps ne vaut pas une perte d'économies.
 
 hands,keyboard,typing | Astuce un : demande des sources, puis vérifie-les. Une référence introuvable est un signal d'alerte. Pour la santé, l'argent ou le droit, la vérification est une règle, pas une option.
 

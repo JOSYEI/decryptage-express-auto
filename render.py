@@ -85,7 +85,7 @@ def llm_script(topics):
 
 async def say(text, path):
     import edge_tts
-    c = edge_tts.Communicate(text, VOICE, rate="+7%", boundary="WordBoundary"); words = []
+    c = edge_tts.Communicate(text, VOICE, rate=("-8%" if os.environ.get("SCRIPT_FILE") else "+7%"), boundary="WordBoundary"); words = []
     with open(path, "wb") as f:
         async for ch in c.stream():
             if ch["type"] == "audio": f.write(ch["data"])
@@ -289,7 +289,7 @@ def main():
         for j, (t0, _) in enumerate(stats):
             chain += f"[{4+j}:v]format=rgba,setpts=PTS-STARTPTS+{t0:.2f}/TB[st{j}];[{last}][st{j}]overlay=x={sx}:y={sy}:eof_action=pass[os{j}];"; last = f"os{j}"
         fc = fc.replace("[o0]fade=t=in", chain + f"[{last}]fade=t=in", 1)
-    sh(f"""ffmpeg -y -i '{WORK}/video.mp4' -i '{WORK}/audio.wav' -framerate 30 -i '{ov}/logo_in/%03d.png' -framerate 30 -i '{ov}/cta/%03d.png'{extra_in} -filter_complex "{fc}" -map "[o]" -map 1:a -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -c:a aac -b:a 192k -t {total:.2f} -movflags +faststart '{OUT}/video.mp4'""")
+    sh(f"""ffmpeg -y -i '{WORK}/video.mp4' -i '{WORK}/audio.wav' -framerate 30 -i '{ov}/logo_in/%03d.png' -framerate 30 -i '{ov}/cta/%03d.png'{extra_in} -filter_complex "{fc}" -map "[o]" -map 1:a -c:v libx264 -preset veryfast -crf 24 -pix_fmt yuv420p -c:a aac -b:a 160k -t {total:.2f} -movflags +faststart '{OUT}/video.mp4'""")
     import seo, cover
     S = seo.build(script, topics, MODE, [b["text"] for b in blocks])
     cover.make(f"{WORK}/video.mp4", script["title"], "ACTU IA" if SHORT else "DÉCRYPTAGE IA", f"{OUT}/cover.jpg", SHORT)
