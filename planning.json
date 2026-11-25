@@ -12,6 +12,7 @@
   "slot": "16:00",
   "tag": "v47-mer-short",
   "nets": [
+   "yt",
    "fb",
    "ig"
   ]
@@ -29,6 +30,7 @@
   "slot": "16:00",
   "tag": "v47-jeu-short",
   "nets": [
+   "yt",
    "fb",
    "ig"
   ]
@@ -46,6 +48,7 @@
   "slot": "16:00",
   "tag": "v47-ven-short",
   "nets": [
+   "yt",
    "fb",
    "ig"
   ]
@@ -63,6 +66,7 @@
   "slot": "16:00",
   "tag": "v47-sam-short",
   "nets": [
+   "yt",
    "fb",
    "ig"
   ]
@@ -80,6 +84,7 @@
   "slot": "16:00",
   "tag": "v47-dim-short",
   "nets": [
+   "yt",
    "fb",
    "ig"
   ]
