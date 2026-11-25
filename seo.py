@@ -7,7 +7,7 @@ BANK = ("intelligence artificielle,actualité IA,actu IA,IA générative,agents 
 ST = set("le la les un une des de du et en au aux à a ce ces sur pour par avec dans qui que est sont il elle the of to in vs ou où se sa son ses plus très pas ne".split())
 def words(s): return [w for w in re.findall(r"[\wÀ-ÿ'’-]+", s)]
 def est_tags(L): return sum(len(x) + (2 if " " in x else 0) for x in L) + len(L) - 1
-def build(script, topics, mode, blocks_text, hours="08h00, 12h00, 16h00 et 20h00"):
+def build(script, topics, mode, blocks_text):
     short = mode == "short"
     kws = []
     for t in topics:
@@ -35,10 +35,10 @@ def build(script, topics, mode, blocks_text, hours="08h00, 12h00, 16h00 et 20h00
     transcript = " ".join(blocks_text)
     if len(transcript) > 1800: transcript = transcript[:1800].rsplit(".", 1)[0] + "."
     retenir = "\n".join("• " + re.split(r"(?<=[.!?])\s", b)[0] for b in blocks_text[:8])
-    desc = (f"{script['description']}\n\n👇 Dis-moi en commentaire : ce sujet te surprend-il ? 🔔 Abonne-toi à Décryptage Express pour l'actu IA, tech et bourse décryptée chaque jour.\n\n"
+    desc = (f"{script['description']}\n\n👇 Dis-moi en commentaire : ce sujet te surprend-il ? 🔔 Abonne-toi pour ne rien manquer.\n\n"
             f"✅ CE QU'IL FAUT RETENIR\n{retenir}\n\n📝 LE RÉSUMÉ COMPLET\n{transcript}\n\n"
-            f"🗞️ LES SUJETS DU JOUR\n" + "\n".join("• " + t["title"] + " (" + ", ".join(sorted({a['source'] for a in t['articles']})[:3]) + ")" for t in topics) +
-            f"\n\n⏰ UN NOUVEAU DÉCRYPTAGE CHAQUE JOUR\nUne vidéo longue et un Short, tous les jours.\n\n📩 Newsletter gratuite : https://decryptageexpress.com\n✉️ Contact : contact@decryptageexpress.com\n\n")
+            f"🗞️ AU PROGRAMME\n" + "\n".join("• " + t["title"] + " (" + ", ".join(sorted({a['source'] for a in t['articles']})[:3]) + ")" for t in topics) +
+            f"\n\n📩 Newsletter gratuite : https://decryptageexpress.com\n✉️ Contact : contact@decryptageexpress.com\n\n")
     tail = "\n\nContenu réalisé avec l'aide de l'IA (voix de synthèse, images et vidéos assemblées).\n\n" + hashtags
     kline = "🔑 MOTS-CLÉS : "
     pool = [k for k in kws]
@@ -52,5 +52,5 @@ def build(script, topics, mode, blocks_text, hours="08h00, 12h00, 16h00 et 20h00
     t0 = topics[0]["title"]
     if len(t0) > 110: t0 = t0[:110].rsplit(" ", 1)[0].rstrip(" ,;:-—") + "…"
     pinned = (f"📌 {t0} — qu'en pensez-vous ? Répondez en commentaire 👇 "
-              f"Abonnez-vous à Décryptage Express pour l'actu IA, tech et bourse décryptée chaque jour. {hashtags.split(' ')[0]} #IA")
+              f"Abonnez-vous pour ne rien manquer. {hashtags.split(' ')[0]} #IA")
     return {"title": title, "description": desc, "tags": ",".join(tags) + ",", "pinned_comment": pinned, "hashtags": hashtags}
